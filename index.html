@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Katak Lompat Edukasi</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game-container">
+    <!-- Skor & Timer -->
+    <div id="score">Skor: 0/100</div>
+    <div id="timer">Waktu: 0s</div>
+
+    <!-- Langit & Awan -->
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+
+    <!-- Sungai -->
+    <div id="river"></div>
+
+    <!-- Katak -->
+    <div id="frog"></div>
+
+    <!-- Modal Soal -->
+    <div id="question-modal" class="hidden">
+      <h2>Pertanyaan #<span id="question-count">1</span>/10</h2>
+      <p id="question-text"></p>
+      <div id="options"></div>
+    </div>
+
+    <!-- Modal Skor 100 -->
+    <div id="completion-modal" class="hidden">
+      <h2>🏆 SELAMAT! SKOR 100</h2>
+      <p id="completion-time">Waktu: 0 detik</p>
+      <p>Masukkan nama Anda untuk leaderboard:</p>
+      <input type="text" id="player-name" placeholder="Nama Anda" maxlength="15">
+      <button id="submit-name">Kirim</button>
+    </div>
+
+    <!-- Leaderboard -->
+    <div id="leaderboard" class="hidden">
+      <h2>🏆 LEADERBOARD (Skor 100)</h2>
+      <ul id="leaderboard-list"></ul>
+      <button id="play-again">Main Lagi</button>
+    </div>
+
+    <!-- Game Over -->
+    <div id="game-over" class="hidden">
+      <h2>GAME OVER!</h2>
+      <p>Skor: <span id="final-score">0</span></p>
+      <button id="restart-btn">Coba Lagi</button>
+    </div>
+
+    <!-- Instruksi -->
+    <div id="instructions">Tekan SPASI atau KLIK untuk melompat!</div>
+  </div>
+
+  <!-- Audio -->
+  <audio id="jump-sound" src="https://www.soundjay.com/button/sounds/button-09.mp3"></audio>
+  <audio id="correct-sound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
+  <audio id="wrong-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
