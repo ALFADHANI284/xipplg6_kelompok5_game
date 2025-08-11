@@ -280,3 +280,104 @@ body {
   font-size: 16px;
   margin-top: 10px;
 }
+
+/* Tambahkan di bagian bawah CSS Anda */
+
+/* Leaderboard */
+#leaderboard {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  border: 4px solid #FFD700;
+  border-radius: 15px;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  z-index: 30;
+  font-family: 'Comic Sans MS', cursive;
+}
+
+#leaderboard h2 {
+  color: #FFD700;
+  margin-bottom: 20px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+#leaderboard-list {
+  list-style: none;
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 0 0 20px 0;
+  padding: 0;
+}
+
+#leaderboard-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px dashed #eee;
+  font-size: 16px;
+}
+
+#leaderboard-list .rank {
+  font-weight: bold;
+  color: #FFD700;
+  min-width: 20px;
+}
+
+#leaderboard-list .name {
+  flex: 1;
+  text-align: left;
+  padding-left: 10px;
+}
+
+#leaderboard-list .time {
+  font-weight: bold;
+  color: #2e7d32;
+  min-width: 50px;
+  text-align: right;
+}
+
+#leaderboard-list .date {
+  font-size: 12px;
+  color: #666;
+  margin-left: 5px;
+}
+
+#play-again {
+  padding: 10px 20px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Completion Modal */
+#completion-modal {
+  width: 400px;
+}
+
+#player-name {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+#submit-name {
+  background: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
