@@ -10,7 +10,16 @@
   <div id="game-container">
     <!-- Skor & Timer -->
     <div id="score">Skor: 0/100</div>
-    <div id="timer">Waktu: 0s</div>
+    <div id="timer">Waktu: 0s</div><!-- Tambahkan di dalam #game-over -->
+<p>Waktu: <span id="final-time">0</span> detik</p>
+<button id="view-leaderboard">Lihat Leaderboard</button>
+
+<!-- Pastikan semua elemen berikut ada -->
+<div id="leaderboard" class="hidden">
+  <h2>🏆 LEADERBOARD</h2>
+  <ul id="leaderboard-list"></ul>
+  <button id="play-again">Main Lagi</button>
+</div>
 
     <!-- Langit & Awan -->
     <div class="cloud cloud1"></div>

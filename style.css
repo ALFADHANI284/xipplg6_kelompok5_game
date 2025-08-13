@@ -383,3 +383,110 @@ body {
   cursor: pointer;
   font-weight: bold;
 }
+
+/* Leaderboard Styling */
+#leaderboard {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 25px;
+  border: 4px solid #4CAF50;
+  border-radius: 15px;
+  width: 400px;
+  max-width: 90%;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  z-index: 100;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#leaderboard h2 {
+  color: #2e7d32;
+  margin-bottom: 20px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+#leaderboard-list {
+  list-style: none;
+  max-height: 350px;
+  overflow-y: auto;
+  margin: 0 0 20px 0;
+  padding: 0;
+  border-radius: 10px;
+  background: #f5f5f5;
+}
+
+.leaderboard-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 15px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+
+.leaderboard-item:hover {
+  background: #e8f5e9;
+}
+
+.leaderboard-item:last-child {
+  border-bottom: none;
+}
+
+.rank {
+  font-weight: bold;
+  width: 30px;
+  text-align: left;
+}
+
+.score {
+  flex: 1;
+  text-align: left;
+  padding-left: 10px;
+  font-weight: 600;
+}
+
+.time {
+  width: 80px;
+  text-align: right;
+  color: #1b5e20;
+  font-weight: bold;
+}
+
+.date {
+  width: 80px;
+  text-align: right;
+  color: #757575;
+  font-size: 14px;
+  margin-left: 5px;
+}
+
+/* Peringkat 1-3 */
+.gold { background: #fffde7; border-left: 4px solid #ffd600; }
+.silver { background: #e0e0e0; border-left: 4px solid #bdbdbd; }
+.bronze { background: #ffecb3; border-left: 4px solid #ff9800; }
+
+.empty {
+  text-align: center;
+  padding: 20px;
+  color: #9e9e9e;
+  font-style: italic;
+}
+
+#play-again, #view-leaderboard {
+  background: #4CAF50;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+
+#play-again:hover, #view-leaderboard:hover {
+  background: #388e3c;
+}
