@@ -10,16 +10,7 @@
   <div id="game-container">
     <!-- Skor & Timer -->
     <div id="score">Skor: 0/100</div>
-    <div id="timer">Waktu: 0s</div><!-- Tambahkan di dalam #game-over -->
-<p>Waktu: <span id="final-time">0</span> detik</p>
-<button id="view-leaderboard">Lihat Leaderboard</button>
-
-<!-- Pastikan semua elemen berikut ada -->
-<div id="leaderboard" class="hidden">
-  <h2>🏆 LEADERBOARD</h2>
-  <ul id="leaderboard-list"></ul>
-  <button id="play-again">Main Lagi</button>
-</div>
+    <div id="timer">Waktu: 0s</div>
 
     <!-- Langit & Awan -->
     <div class="cloud cloud1"></div>
@@ -36,6 +27,7 @@
       <h2>Pertanyaan #<span id="question-count">1</span>/10</h2>
       <p id="question-text"></p>
       <div id="options"></div>
+      <div id="question-timer">Waktu: <span id="question-time">10</span>s</div>
     </div>
 
     <!-- Modal Skor 100 -->
@@ -49,7 +41,7 @@
 
     <!-- Leaderboard -->
     <div id="leaderboard" class="hidden">
-      <h2>🏆 LEADERBOARDdd (Skor 100)</h2>
+      <h2>🏆 LEADERBOARDddaaaa (Skor 100)</h2>
       <ul id="leaderboard-list"></ul>
       <button id="play-again">Main Lagi</button>
     </div>
@@ -58,6 +50,7 @@
     <div id="game-over" class="hidden">
       <h2>GAME OVER!</h2>
       <p>Skor: <span id="final-score">0</span></p>
+      <p>Waktu: <span id="final-time">0</span> detikk</p>
       <button id="restart-btn">Coba Lagi</button>
     </div>
 
@@ -69,6 +62,7 @@
   <audio id="jump-sound" src="https://www.soundjay.com/button/sounds/button-09.mp3"></audio>
   <audio id="correct-sound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
   <audio id="wrong-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+
   <script src="script.js"></script>
 </body>
 </html>
