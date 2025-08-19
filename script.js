@@ -1,8 +1,12 @@
-const frog = document.getElementById("frog");
+// === Elemen DOM ===
+const mainMenu = document.getElementById("main-menu");
 const gameContainer = document.getElementById("game-container");
+const startBtn = document.getElementById("start-btn");
+const frog = document.getElementById("frog");
 const scoreDisplay = document.getElementById("score");
 const timerDisplay = document.getElementById("timer");
-const modal = document.getElementById("question-modal");
+const livesDisplay = document.getElementById("lives");
+const questionBox = document.getElementById("question-box");
 const questionText = document.getElementById("question-text");
 const optionsDiv = document.getElementById("options");
 const questionTimeDisplay = document.getElementById("question-time");
@@ -18,42 +22,44 @@ const leaderboardScreen = document.getElementById("leaderboard");
 const leaderboardList = document.getElementById("leaderboard-list");
 const playAgainBtn = document.getElementById("play-again");
 
-let isJumping = false;
-let score = 0;
-let questionsAnswered = 0;
-let gravity = 0.9;
-let position = 0;
-let leafInterval;
-let gameActive = true;
-let startTime;
-let gameTimer;
-let speedIncreaseTimer;
-let questionTimer;
-let correctAnswerStreak = 0;
-let leafSpeed = 7;
-const TOTAL_QUESTIONS = 10;
-const POINTS_PER_QUESTION = 10;
-
 // 🔊 Suara
 const jumpSound = document.getElementById("jump-sound");
 const correctSound = document.getElementById("correct-sound");
 const wrongSound = document.getElementById("wrong-sound");
+const scoreSound = document.getElementById("score-sound"); // 🔊 Suara skor
 
-// 🐸 Daftar Soal
+// 🐸 Variabel Game
+let isJumping = false;
+let score = 0;
+let lives = 5;
+let gravity = 0.9;
+let position = 0;
+let rockInterval;
+let gameActive = false;
+let startTime;
+let gameTimer;
+let questionTimer;
+
+let questionsAnswered = 0;
+const MAX_QUESTION_POPUPS = 8;
+
+// 📚 Soal
 const questions = [
-  { q: "Berapa hasil dari 5 + 7?", a: ["10", "12", "13"], correct: 1 },
-  { q: "Apa warna daun?", a: ["Merah", "Hijau", "Biru"], correct: 1 },
-  { q: "Hewan yang bisa melompat tinggi?", a: ["Katak", "Sapi", "Kura-kura"], correct: 0 },
-  { q: "Berapa kaki yang dimiliki katak?", a: ["2", "4", "6"], correct: 1 },
-  { q: "Matahari terbit dari arah?", a: ["Barat", "Timur", "Selatan"], correct: 1 },
-  { q: "Apa lawan kata 'panas'?", a: ["Dingin", "Hangat", "Lembab"], correct: 0 },
-  { q: "10 dikurangi 3 sama dengan?", a: ["6", "7", "8"], correct: 1 },
-  { q: "Hewan yang hidup di dua alam?", a: ["Ikan", "Katak", "Burung"], correct: 1 },
-  { q: "Apa hasil dari 4 × 5?", a: ["16", "20", "24"], correct: 1 },
-  { q: "Berapa jari tangan manusia?", a: ["8", "10", "12"], correct: 1 }
+  { q: "Berapa hasil dari 5 × 6?", a: ["30", "25", "35"], correct: 0 },
+  { q: "Ibu kota Indonesia?", a: ["Bandung", "Jakarta", "Surabaya"], correct: 1 },
+  { q: "Hewan yang hidup di darat & air?", a: ["Ikan", "Katak", "Ular"], correct: 1 },
+  { q: "1 jam = ? menit", a: ["30", "60", "90"], correct: 1 },
+  { q: "Warna daun?", a: ["Merah", "Hijau", "Kuning"], correct: 1 }
 ];
 
-// ⏱️ Fungsi Timer
+// 🚀 Start Game
+startBtn.addEventListener("click", () => {
+  mainMenu.classList.add("hidden");
+  gameContainer.classList.remove("hidden");
+  initGame();
+});
+
+// ⏱️ Timer
 function startTimer() {
   startTime = Date.now();
   gameTimer = setInterval(() => {
@@ -66,16 +72,16 @@ function stopTimer() {
   clearInterval(gameTimer);
 }
 
-// 🏆 Fungsi Leaderboard
+// ❤️ Update Nyawa
+function updateLives() {
+  livesDisplay.textContent = "❤️".repeat(lives);
+  if (lives <= 0) gameOver();
+}
+
+// 🏆 Leaderboard
 function saveToLeaderboard(name, time) {
-  const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-  
-  leaderboard.push({ 
-    name, 
-    time, 
-    date: new Date().toLocaleDateString()
-  });
-  
+  let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+  leaderboard.push({ name, time, date: new Date().toLocaleDateString() });
   leaderboard.sort((a, b) => a.time - b.time);
   localStorage.setItem('leaderboard', JSON.stringify(leaderboard.slice(0, 10)));
 }
@@ -83,25 +89,22 @@ function saveToLeaderboard(name, time) {
 function showLeaderboard() {
   const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
   leaderboardList.innerHTML = '';
-  
   if (leaderboard.length === 0) {
     leaderboardList.innerHTML = '<li class="empty">Belum ada pemain</li>';
     return;
   }
-  
   leaderboard.forEach((entry, index) => {
     const li = document.createElement('li');
     li.innerHTML = `
-      <span class="rank">${index + 1}.</span>
+      <span class="rank">#${index + 1}</span>
       <span class="name">${entry.name}</span>
       <span class="time">${entry.time}s</span>
-      <span class="date">${entry.date}</span>
     `;
     leaderboardList.appendChild(li);
   });
 }
 
-// 🐸 Lompatan
+// 🐸 Lompat
 function jump() {
   if (isJumping || !gameActive) return;
   isJumping = true;
@@ -109,7 +112,7 @@ function jump() {
   jumpSound.play();
 
   let upSpeed = 18;
-  let jumpInterval = setInterval(() => {
+  const jumpInterval = setInterval(() => {
     position += upSpeed;
     upSpeed -= gravity;
     frog.style.bottom = position + "px";
@@ -124,176 +127,176 @@ function jump() {
   }, 20);
 }
 
-// 🍃 Membuat Daun
-function createLeaf() {
-  const leaf = document.createElement("div");
-  leaf.classList.add("leaf");
-  leaf.style.left = "1000px";
-  leaf.dataset.passed = "false";
-  leaf.dataset.questionShown = "false";
-  gameContainer.appendChild(leaf);
+// 🪨 Buat Batu
+function createRock() {
+  if (!gameActive) return;
 
-  // Tambahkan riak kecil di sungai
-  const wave = document.createElement("div");
-  wave.classList.add("wave");
-  wave.style.left = Math.random() * 100 + "vw";
-  gameContainer.appendChild(wave);
-  setTimeout(() => gameContainer.removeChild(wave), 2000);
+  const rock = document.createElement("div");
+  rock.classList.add("rock");
 
-  let leafPosition = 1000;
-  let moveLeaf = setInterval(() => {
-    // ⛔ HENTIKAN SEMUA GERAKAN SAAT SOAL MUNCUL
-    if (!modal.classList.contains("hidden")) {
+  const isQuestionRock = questionsAnswered < MAX_QUESTION_POPUPS && Math.random() < 0.25;
+  if (isQuestionRock) {
+    rock.classList.add("question-rock");
+    rock.dataset.type = "question";
+  } else {
+    rock.dataset.type = "normal";
+  }
+
+  rock.style.left = "1000px";
+  rock.dataset.scored = "false"; // Cegah double skor
+  gameContainer.appendChild(rock);
+
+  let rockPosition = 1000;
+  const moveRock = setInterval(() => {
+    if (!gameActive || !questionBox.classList.contains("hidden")) return;
+
+    rockPosition -= 7;
+    rock.style.left = rockPosition + "px";
+
+    // Deteksi tabrakan
+    const frogRect = frog.getBoundingClientRect();
+    const rockRect = rock.getBoundingClientRect();
+    if (
+      frogRect.left < rockRect.right &&
+      frogRect.right > rockRect.left &&
+      frogRect.top < rockRect.bottom &&
+      frogRect.bottom > rockRect.top
+    ) {
+      if (isQuestionRock) {
+        showQuestion();
+      } else {
+        lives--;
+        updateLives();
+        wrongSound.play();
+      }
+      clearInterval(moveRock);
+      if (rock.parentNode) gameContainer.removeChild(rock);
       return;
     }
-    
-    leafPosition -= leafSpeed;
-    leaf.style.left = leafPosition + "px";
 
-    // 🔥 DETEKSI TABRAKAN FISIK
-    const frogLeft = 80;
-    const frogWidth = 50;
-    const leafWidth = 50;
-    
-    if (
-      leaf.dataset.questionShown === "false" && 
-      !isJumping && 
-      leafPosition <= frogLeft + frogWidth && 
-      leafPosition + leafWidth >= frogLeft
-    ) {
-      // ⛔ HENTIKAN SEMUA GERAKAN
-      gameActive = false;
-      clearInterval(leafInterval);
-      
-      showQuestion();
-      leaf.dataset.questionShown = "true";
-    }
-
-    // ✅ +1 POIN SAAT MELEWATI BATU (tanpa tabrakan)
-    if (leafPosition < frogLeft - 50 && leaf.dataset.passed === "false") {
-      score++;
+    // ✅ Skor +5 saat lewati batu biasa
+    if (rock.dataset.type === "normal" && rockPosition < 30 && rock.dataset.scored === "false") {
+      rock.dataset.scored = "true";
+      score += 5;
       scoreDisplay.textContent = `Skor: ${score}/100`;
-      leaf.dataset.passed = "true";
+      scoreSound.currentTime = 0;
+      scoreSound.play();
+
+      // ✅ Tampilkan efek +5
+      const popup = document.createElement("div");
+      popup.className = "score-popup";
+      popup.textContent = "+5";
+      popup.style.left = "80px";
+      popup.style.bottom = "120px";
+      gameContainer.appendChild(popup);
+
+      setTimeout(() => {
+        if (popup.parentNode) gameContainer.removeChild(popup);
+      }, 1000);
+
+      if (score >= 100) completeGame();
     }
 
-    // Hapus daun saat keluar layar
-    if (leafPosition < -100) {
-      clearInterval(moveLeaf);
-      gameContainer.removeChild(leaf);
+    // Hapus batu
+    if (rockPosition < -100) {
+      clearInterval(moveRock);
+      if (rock.parentNode) gameContainer.removeChild(rock);
     }
   }, 30);
 }
 
-// ❓ Tampilkan Soal dengan Timer 10 detik
+// ❓ Tampilkan Soal
 function showQuestion() {
-  modal.classList.remove("hidden");
-  document.getElementById("question-count").textContent = questionsAnswered + 1;
-  
-  const q = questions[questionsAnswered];
+  questionBox.classList.remove("hidden");
+  const q = questions[Math.floor(Math.random() * questions.length)];
   questionText.textContent = q.q;
   optionsDiv.innerHTML = "";
-  
-  // Timer soal 10 detik
-  let questionTimeLeft = 10;
-  questionTimeDisplay.textContent = questionTimeLeft;
-  
+
+  let timeLeft = 15;
+  questionTimeDisplay.textContent = timeLeft;
   questionTimer = setInterval(() => {
-    questionTimeLeft--;
-    questionTimeDisplay.textContent = questionTimeLeft;
-    
-    if (questionTimeLeft <= 0) {
+    timeLeft--;
+    questionTimeDisplay.textContent = timeLeft;
+    if (timeLeft <= 0) {
       clearInterval(questionTimer);
       wrongSound.play();
-      gameOver();
-      modal.classList.add("hidden");
+      lives--;
+      updateLives();
+      questionBox.classList.add("hidden");
     }
   }, 1000);
 
   q.a.forEach((option, index) => {
     const btn = document.createElement("button");
     btn.textContent = option;
-    btn.onclick = () => {
-      // Hentikan timer soal
+    btn.addEventListener("click", () => {
       clearInterval(questionTimer);
-      
+      questionsAnswered++;
       if (index === q.correct) {
-        questionsAnswered++;
-        score = questionsAnswered * POINTS_PER_QUESTION;
+        score += 10;
         scoreDisplay.textContent = `Skor: ${score}/100`;
         correctSound.play();
-        
-        // 🚀 Cek speed increase
-        correctAnswerStreak++;
-        if (correctAnswerStreak >= 4 || Math.floor((Date.now() - startTime) / 1000) >= 20) {
-          increaseSpeed();
-          correctAnswerStreak = 0;
-        }
-        
-        // 🎯 Selesai 10 soal
-        if (questionsAnswered === TOTAL_QUESTIONS) {
-          stopTimer();
-          const totalTime = Math.floor((Date.now() - startTime) / 1000);
-          completionTime.textContent = `Waktu: ${totalTime} detik`;
-          modal.classList.add("hidden");
-          completionModal.classList.remove("hidden");
-        }
+        if (score >= 100) completeGame();
       } else {
+        lives--;
+        updateLives();
         wrongSound.play();
-        gameOver();
       }
-      
-      modal.classList.add("hidden");
-    };
+      questionBox.classList.add("hidden");
+    });
     optionsDiv.appendChild(btn);
   });
 }
 
-// 🚀 Increase Speed
-function increaseSpeed() {
-  if (leafSpeed < 12) {
-    leafSpeed += 0.5;
-  }
+// 🏁 Selesai
+function completeGame() {
+  gameActive = false;
+  stopTimer();
+  clearInterval(rockInterval);
+  const totalTime = Math.floor((Date.now() - startTime) / 1000);
+  completionTime.textContent = `Waktu: ${totalTime} detik`;
+  completionModal.classList.remove("hidden");
+
+  // ✅ Confetti saat skor 100
+  confetti({
+    particleCount: 150,
+    spread: 180,
+    origin: { y: 0.6 },
+    colors: ['#FFD700', '#4CAF50', '#2196F3', '#F44336', '#9C27B0']
+  });
 }
 
 // 💀 Game Over
 function gameOver() {
   gameActive = false;
-  clearInterval(leafInterval);
+  clearInterval(rockInterval);
   clearInterval(gameTimer);
-  clearInterval(questionTimer);
   finalScore.textContent = score;
   finalTime.textContent = Math.floor((Date.now() - startTime) / 1000);
   gameOverScreen.classList.remove("hidden");
 }
 
-// 🚀 Inisialisasi Game
+// 🚀 Inisialisasi
 function initGame() {
   gameActive = true;
   score = 0;
+  lives = 5;
   questionsAnswered = 0;
-  correctAnswerStreak = 0;
-  leafSpeed = 7;
   scoreDisplay.textContent = `Skor: ${score}/100`;
+  updateLives();
   timerDisplay.textContent = "Waktu: 0s";
-  
-  // Hapus semua daun yang tersisa
-  document.querySelectorAll(".leaf").forEach(leaf => leaf.remove());
-  
-  // Mulai timer
+
+  document.querySelectorAll(".rock").forEach(el => el.remove());
+  frog.classList.remove("jump");
+  frog.style.bottom = "80px";
+
   startTimer();
-  
-  // Mulai buat daun
-  leafInterval = setInterval(createLeaf, 2500);
+  rockInterval = setInterval(createRock, 2000);
 }
 
-// 🏆 Event Listeners
+// 🎮 Event Listeners
 submitNameBtn.addEventListener("click", () => {
-  const name = playerNameInput.value.trim();
-  if (!name) {
-    alert("Masukkan nama Anda!");
-    return;
-  }
-  
+  const name = playerNameInput.value.trim() || "Anonim";
   const time = Math.floor((Date.now() - startTime) / 1000);
   saveToLeaderboard(name, time);
   completionModal.classList.add("hidden");
@@ -311,7 +314,7 @@ restartBtn.addEventListener("click", () => {
   initGame();
 });
 
-// 🎮 Kontrol Game
+// Kontrol
 document.addEventListener("keydown", (e) => {
   if (e.code === "Space" && gameActive) {
     e.preventDefault();
@@ -319,12 +322,6 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-document.addEventListener("click", (e) => {
-  if (gameActive && e.target !== playerNameInput) {
-    jump();
-  }
+document.addEventListener("click", () => {
+  if (gameActive) jump();
 });
-
-// 🚀 Start Game
-initGame();
-showLeaderboard();
