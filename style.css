@@ -63,7 +63,7 @@ body {
 .back-button {
   position: relative;
   top: 15px;
-  left: 15px;
+  left: 450px;
   padding: 8px 15px;
   font-size: 14px;
   background: rgba(0,0,0,0.6);
@@ -350,4 +350,15 @@ body {
 @keyframes float-up {
   0% { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(-50px); }
+}
+#restart-btn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
 }

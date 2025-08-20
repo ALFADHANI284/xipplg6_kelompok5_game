@@ -36,7 +36,7 @@ let isJumping = false;
 let score = 0;
 let lives = 5;
 let gravity = 0.9;
-let position = 80; // Mulai dari posisi dasar
+let position = 80;
 let rockInterval;
 let gameActive = false;
 let startTime;
@@ -70,22 +70,26 @@ viewLeaderboardBtn.addEventListener("click", () => {
 });
 
 // 🔙 Kembali dari Leaderboard ke Menu
-backToMenuBtn?.addEventListener("click", () => {
-  leaderboardScreen.classList.add("hidden");
-  mainMenu.classList.remove("hidden");
-});
+if (backToMenuBtn) {
+  backToMenuBtn.addEventListener("click", () => {
+    leaderboardScreen.classList.add("hidden");
+    mainMenu.classList.remove("hidden");
+  });
+}
 
 // 🔙 Kembali dari Game ke Menu
-backBtn.addEventListener("click", () => {
-  if (confirm("Yakin ingin kembali ke menu?")) {
-    gameActive = false;
-    clearInterval(rockInterval);
-    clearInterval(gameTimer);
-    clearInterval(questionTimer);
-    gameContainer.classList.add("hidden");
-    mainMenu.classList.remove("hidden");
-  }
-});
+if (backBtn) {
+  backBtn.addEventListener("click", () => {
+    if (confirm("Yakin ingin kembali ke menu?")) {
+      gameActive = false;
+      clearInterval(rockInterval);
+      clearInterval(gameTimer);
+      clearInterval(questionTimer);
+      gameContainer.classList.add("hidden");
+      mainMenu.classList.remove("hidden");
+    }
+  });
+}
 
 // ⏱️ Timer
 function startTimer() {
@@ -133,9 +137,7 @@ function showLeaderboard() {
 }
 
 // 🐸 Lompat (tidak bisa double jump)
-// 🐸 Lompat (tidak bisa double jump)
 function jump() {
-  // ❌ Cegah lompat jika sudah melompat atau game tidak aktif
   if (isJumping || !gameActive) return;
 
   isJumping = true;
@@ -143,37 +145,22 @@ function jump() {
   jumpSound.play();
 
   let upSpeed = 14;
-  position = 80; // ✅ Reset posisi awal
+  position = 80;
 
   const jumpInterval = setInterval(() => {
     position += upSpeed;
     upSpeed -= gravity;
     frog.style.bottom = position + "px";
 
-    // Saat turun kembali ke tanah
     if (position <= 80) {
       clearInterval(jumpInterval);
       isJumping = false;
       frog.classList.remove("jump");
       frog.style.bottom = "80px";
-      position = 80; // ✅ Reset ke dasar
+      position = 80;
     }
   }, 20);
 }
-
-// 🎮 Kontrol: Spasi atau klik
-document.addEventListener("keydown", (e) => {
-  if (e.code === "Space" && gameActive) {
-    e.preventDefault();
-    jump(); // ✅ Pastikan ini terpanggil
-  }
-});
-
-document.addEventListener("click", (e) => {
-  if (gameActive && e.target !== playerNameInput) {
-    jump(); // ✅ Klik di mana saja (kecuali input) untuk lompat
-  }
-});
 
 // 🪨 Buat Batu
 function createRock() {
@@ -334,30 +321,38 @@ function initGame() {
   document.querySelectorAll(".rock").forEach(el => el.remove());
   frog.classList.remove("jump");
   frog.style.bottom = "80px";
+  position = 80;
 
   startTimer();
   rockInterval = setInterval(createRock, 3000);
 }
 
-// 🎮 Event Listeners
-submitNameBtn.addEventListener("click", () => {
-  const name = playerNameInput.value.trim() || "Anonim";
-  const time = Math.floor((Date.now() - startTime) / 1000);
-  saveToLeaderboard(name, time);
-  completionModal.classList.add("hidden");
-  showLeaderboard();
-  leaderboardScreen.classList.remove("hidden");
-});
+// 🎮 Event Listeners (dengan pengecekan null)
+if (submitNameBtn) {
+  submitNameBtn.addEventListener("click", () => {
+    const name = playerNameInput.value.trim() || "Anonim";
+    const time = Math.floor((Date.now() - startTime) / 1000);
+    saveToLeaderboard(name, time);
+    completionModal.classList.add("hidden");
+    showLeaderboard();
+    leaderboardScreen.classList.remove("hidden");
+  });
+}
 
-playAgainBtn.addEventListener("click", () => {
-  leaderboardScreen.classList.add("hidden");
-  initGame();
-});
+if (playAgainBtn) {
+  playAgainBtn.addEventListener("click", () => {
+    leaderboardScreen.classList.add("hidden");
+    initGame();
+  });
+}
 
-restartBtn.addEventListener("click", () => {
-  gameOverScreen.classList.add("hidden");
-  initGame();
-});
+if (restartBtn) {
+  restartBtn.addEventListener("click", () => {
+    console.log("Tombol Coba Lagi diklik!"); // 🔍 Debug
+    gameOverScreen.classList.add("hidden");
+    initGame(); // ✅ Game mulai ulang
+  });
+}
 
 // Kontrol: Spasi atau klik
 document.addEventListener("keydown", (e) => {
