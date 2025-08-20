@@ -10,6 +10,55 @@ body {
   background: #87CEEB;
 }
 
+/* Form Nama Pemain */
+#name-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  z-index: 200;
+  width: 400px;
+  max-width: 90vw;
+}
+
+#name-modal h2 {
+  color: #2e7d32;
+  margin-bottom: 15px;
+}
+
+#player-name-input {
+  width: 100%;
+  padding: 12px;
+  margin: 15px 0;
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: 'Comic Sans MS', cursive;
+}
+
+#start-game-btn {
+  background: #4CAF50;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  width: 100%;
+  transition: 0.2s;
+}
+
+#start-game-btn:hover {
+  background: #388e3c;
+  transform: translateY(-2px);
+}
+
 /* Main Menu */
 .menu {
   position: fixed;
@@ -277,7 +326,7 @@ body {
   color: white;
 }
 
-#restart-btn, #play-again, #submit-name, #back-to-menu {
+#restart-btn, #play-again, #submit-name, #back-to-menu, #restart-game-btn {
   margin-top: 15px;
   padding: 10px 20px;
   font-size: 16px;
@@ -350,15 +399,4 @@ body {
 @keyframes float-up {
   0% { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(-50px); }
-}
-#restart-btn {
-  margin-top: 15px;
-  padding: 10px 20px;
-  font-size: 16px;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
 }

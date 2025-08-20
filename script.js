@@ -1,5 +1,8 @@
 // === Elemen DOM ===
 const mainMenu = document.getElementById("main-menu");
+const nameModal = document.getElementById("name-modal");
+const playerNameInput = document.getElementById("player-name-input");
+const startGameBtn = document.getElementById("start-game-btn");
 const gameContainer = document.getElementById("game-container");
 const startBtn = document.getElementById("start-btn");
 const viewLeaderboardBtn = document.getElementById("view-leaderboard-btn");
@@ -18,11 +21,9 @@ const finalTime = document.getElementById("final-time");
 const restartBtn = document.getElementById("restart-btn");
 const completionModal = document.getElementById("completion-modal");
 const completionTime = document.getElementById("completion-time");
-const playerNameInput = document.getElementById("player-name");
-const submitNameBtn = document.getElementById("submit-name");
+const restartGameBtn = document.getElementById("restart-game-btn");
 const leaderboardScreen = document.getElementById("leaderboard");
 const leaderboardList = document.getElementById("leaderboard-list");
-const playAgainBtn = document.getElementById("play-again");
 const backToMenuBtn = document.getElementById("back-to-menu");
 
 // 🔊 Suara
@@ -42,9 +43,14 @@ let gameActive = false;
 let startTime;
 let gameTimer;
 let questionTimer;
+let currentPlayerName = "";
+let speedIncreaseTimer;
+let leafSpeed = 7;
 
 let questionsAnswered = 0;
 const MAX_QUESTION_POPUPS = 8;
+const BASE_SPEED = 7;
+const MAX_SPEED = 12;
 
 // 📚 Soal
 const questions = [
@@ -52,14 +58,18 @@ const questions = [
   { q: "Ibu kota Indonesia?", a: ["Bandung", "Jakarta", "Surabaya"], correct: 1 },
   { q: "Hewan yang hidup di darat & air?", a: ["Ikan", "Katak", "Ular"], correct: 1 },
   { q: "1 jam = ? menit", a: ["30", "60", "90"], correct: 1 },
-  { q: "Warna daun?", a: ["Merah", "Hijau", "Kuning"], correct: 1 }
+  { q: "Warna daun?", a: ["Merah", "Hijau", "Kuning"], correct: 1 },
+  { q: "Matahari terbit dari arah?", a: ["Barat", "Timur", "Selatan"], correct: 1 },
+  { q: "Apa lawan kata 'panas'?", a: ["Dingin", "Hangat", "Lembab"], correct: 0 },
+  { q: "10 dikurangi 3 sama dengan?", a: ["6", "7", "8"], correct: 1 },
+  { q: "Hewan yang bisa melompat tinggi?", a: ["Katak", "Sapi", "Kura-kura"], correct: 0 },
+  { q: "Berapa kaki yang dimiliki katak?", a: ["2", "4", "6"], correct: 1 }
 ];
 
-// 🚀 Start Game
+// 🚀 Event Listeners
 startBtn.addEventListener("click", () => {
   mainMenu.classList.add("hidden");
-  gameContainer.classList.remove("hidden");
-  initGame();
+  nameModal.classList.remove("hidden");
 });
 
 // 📊 Lihat Leaderboard
@@ -85,11 +95,26 @@ if (backBtn) {
       clearInterval(rockInterval);
       clearInterval(gameTimer);
       clearInterval(questionTimer);
+      clearInterval(speedIncreaseTimer);
       gameContainer.classList.add("hidden");
       mainMenu.classList.remove("hidden");
     }
   });
 }
+
+// 🎮 Mulai Game setelah masukkan nama
+startGameBtn.addEventListener("click", () => {
+  const name = playerNameInput.value.trim();
+  if (!name) {
+    alert("Masukkan nama Anda!");
+    return;
+  }
+  
+  currentPlayerName = name;
+  nameModal.classList.add("hidden");
+  gameContainer.classList.remove("hidden");
+  initGame();
+});
 
 // ⏱️ Timer
 function startTimer() {
@@ -97,6 +122,11 @@ function startTimer() {
   gameTimer = setInterval(() => {
     const elapsed = Math.floor((Date.now() - startTime) / 1000);
     timerDisplay.textContent = `Waktu: ${elapsed}s`;
+    
+    // 🚀 Speed increase setiap 20 detik
+    if (elapsed % 20 === 0 && elapsed > 0 && leafSpeed < MAX_SPEED) {
+      increaseSpeed();
+    }
   }, 1000);
 }
 
@@ -185,7 +215,7 @@ function createRock() {
   const moveRock = setInterval(() => {
     if (!gameActive || !questionBox.classList.contains("hidden")) return;
 
-    rockPosition -= 7;
+    rockPosition -= leafSpeed;
     rock.style.left = rockPosition + "px";
 
     // Deteksi tabrakan
@@ -281,14 +311,25 @@ function showQuestion() {
   });
 }
 
+// 🚀 Increase Speed
+function increaseSpeed() {
+  if (leafSpeed < MAX_SPEED) {
+    leafSpeed += 0.5;
+  }
+}
+
 // 🏁 Selesai
 function completeGame() {
   gameActive = false;
   stopTimer();
   clearInterval(rockInterval);
+  clearInterval(speedIncreaseTimer);
   const totalTime = Math.floor((Date.now() - startTime) / 1000);
   completionTime.textContent = `Waktu: ${totalTime} detik`;
   completionModal.classList.remove("hidden");
+
+  // Simpan ke leaderboard
+  saveToLeaderboard(currentPlayerName, totalTime);
 
   confetti({
     particleCount: 150,
@@ -303,6 +344,8 @@ function gameOver() {
   gameActive = false;
   clearInterval(rockInterval);
   clearInterval(gameTimer);
+  clearInterval(questionTimer);
+  clearInterval(speedIncreaseTimer);
   finalScore.textContent = score;
   finalTime.textContent = Math.floor((Date.now() - startTime) / 1000);
   gameOverScreen.classList.remove("hidden");
@@ -314,6 +357,7 @@ function initGame() {
   score = 0;
   lives = 5;
   questionsAnswered = 0;
+  leafSpeed = BASE_SPEED;
   scoreDisplay.textContent = `Skor: ${score}/100`;
   updateLives();
   timerDisplay.textContent = "Waktu: 0s";
@@ -325,34 +369,25 @@ function initGame() {
 
   startTimer();
   rockInterval = setInterval(createRock, 3000);
+  
+  // 🚀 Speed increase setiap 20 detik
+  speedIncreaseTimer = setInterval(() => {
+    if (gameActive && leafSpeed < MAX_SPEED) {
+      leafSpeed += 0.5;
+    }
+  }, 20000);
 }
 
-// 🎮 Event Listeners (dengan pengecekan null)
-if (submitNameBtn) {
-  submitNameBtn.addEventListener("click", () => {
-    const name = playerNameInput.value.trim() || "Anonim";
-    const time = Math.floor((Date.now() - startTime) / 1000);
-    saveToLeaderboard(name, time);
-    completionModal.classList.add("hidden");
-    showLeaderboard();
-    leaderboardScreen.classList.remove("hidden");
-  });
-}
+// 🎮 Event Listeners
+restartGameBtn.addEventListener("click", () => {
+  completionModal.classList.add("hidden");
+  initGame();
+});
 
-if (playAgainBtn) {
-  playAgainBtn.addEventListener("click", () => {
-    leaderboardScreen.classList.add("hidden");
-    initGame();
-  });
-}
-
-if (restartBtn) {
-  restartBtn.addEventListener("click", () => {
-    console.log("Tombol Coba Lagi diklik!"); // 🔍 Debug
-    gameOverScreen.classList.add("hidden");
-    initGame(); // ✅ Game mulai ulang
-  });
-}
+restartBtn.addEventListener("click", () => {
+  gameOverScreen.classList.add("hidden");
+  initGame();
+});
 
 // Kontrol: Spasi atau klik
 document.addEventListener("keydown", (e) => {
