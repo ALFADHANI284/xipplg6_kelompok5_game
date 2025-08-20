@@ -13,10 +13,14 @@
     <h1>🐸 FROGY JUMP</h1>
     <p>Selesaikan scorenya dengan menjawab setiap soal, Have Fun !!!!</p>
     <button id="start-btn">🎮 MAIN SEKARANG</button>
+    <button id="view-leaderboard-btn">🏆 LIHAT LEADERBOARD</button>
   </div>
 
   <!-- Game Container -->
   <div id="game-container" class="hidden">
+    <!-- Tombol Kembali (di dalam game) -->
+    <button id="back-btn" class="back-button">⬅️ Kembali</button>
+
     <!-- Skor, Timer, Nyawa -->
     <div id="score">Skor: 0/100</div>
     <div id="timer">Waktu: 0s</div>
@@ -57,7 +61,7 @@
   <div id="leaderboard" class="hidden">
     <h2>🏆 TOP 10 PEMAIN</h2>
     <ul id="leaderboard-list"></ul>
-    <button id="play-again">🔁 Main Lagi</button>
+    <button id="back-to-menu" class="btn-secondary">⬅️ Kembali ke Menu</button>
   </div>
 
   <!-- Game Over -->
@@ -72,9 +76,9 @@
   <audio id="jump-sound" src="https://www.soundjay.com/button/sounds/button-09.mp3"></audio>
   <audio id="correct-sound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
   <audio id="wrong-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
-  <audio id="score-sound" src="https://www.soundjay.com/misc/sounds/beep-07.mp3"></audio> <!-- 🔊 Suara skor -->
+  <audio id="score-sound" src="https://www.soundjay.com/misc/sounds/beep-07.mp3"></audio>
 
-  <!-- ✅ Confetti Library -->
+  <!-- Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
   <script src="script.js"></script>

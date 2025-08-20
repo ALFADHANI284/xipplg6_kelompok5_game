@@ -38,7 +38,8 @@ body {
   margin-bottom: 30px;
 }
 
-#start-btn {
+/* Tombol utama */
+.menu button {
   padding: 15px 40px;
   font-size: 1.2rem;
   background: #FFD700;
@@ -48,11 +49,35 @@ body {
   cursor: pointer;
   font-weight: bold;
   transition: 0.3s;
+  margin: 10px 0;
+  width: 80%;
+  max-width: 300px;
 }
 
-#start-btn:hover {
+.menu button:hover {
   background: #FFC107;
   transform: scale(1.05);
+}
+
+/* Tombol kembali (di dalam game) */
+.back-button {
+  position: relative;
+  top: 15px;
+  left: 15px;
+  padding: 8px 15px;
+  font-size: 14px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 20;
+  transition: 0.2s;
+}
+
+.back-button:hover {
+  background: #000;
+  transform: translateY(-2px);
 }
 
 /* Game Container */
@@ -95,8 +120,16 @@ body {
   transition: transform 0.1s;
 }
 
+/* Lompatan tinggi tapi tidak double */
 #frog.jump {
-  transform: rotate(10deg);
+  transform: translateY(-14px) rotate(15deg);
+  animation: jumpAnimation 0.5s ease-in-out;
+}
+
+@keyframes jumpAnimation {
+  0% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-30px) rotate(15deg); }
+  100% { transform: translateY(0) rotate(0); }
 }
 
 .cloud {
@@ -134,21 +167,10 @@ body {
   background: url('batu.png') no-repeat;
   background-size: cover;
   position: absolute;
-  bottom: 75px; /* sedikit naik biar proporsional */
+  bottom: 75px;
   border-radius: 20px;
   z-index: 2;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.question-rock {
-  background: url('question-box.png') no-repeat; /* Optional: gambar kotak soal */
-  background-size: cover;
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
 }
 
 #river {
@@ -180,25 +202,37 @@ body {
 /* Kotak Soal */
 #question-box {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   background: white;
-  padding: 25px;
+  padding: 30px;
   border: 4px solid #FFD700;
   border-radius: 15px;
-  width: 350px;
+  width: 400px;
+  max-width: 90vw;
   text-align: center;
   box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   z-index: 30;
   font-family: 'Comic Sans MS', cursive;
+  line-height: 1.6;
+}
+
+#question-box h3 {
+  margin-bottom: 15px;
+  color: #FFD700;
+}
+
+#question-box p {
+  margin-bottom: 20px;
+  font-size: 18px;
 }
 
 #options button {
   display: block;
   width: 100%;
   margin: 8px 0;
-  padding: 10px;
+  padding: 12px;
   font-size: 16px;
   background: #a5d6a7;
   border: none;
@@ -243,7 +277,7 @@ body {
   color: white;
 }
 
-#restart-btn, #play-again, #submit-name {
+#restart-btn, #play-again, #submit-name, #back-to-menu {
   margin-top: 15px;
   padding: 10px 20px;
   font-size: 16px;
@@ -253,6 +287,11 @@ body {
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
+  width: 100%;
+}
+
+#back-to-menu {
+  background: #607D8B;
 }
 
 #leaderboard-list {
@@ -296,7 +335,8 @@ body {
   font-size: 16px;
   z-index: 10;
 }
-/* ✅ Efek Teks +5 */
+
+/* Efek Teks +5 */
 .score-popup {
   position: absolute;
   font-weight: bold;
@@ -308,12 +348,6 @@ body {
 }
 
 @keyframes float-up {
-  0% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-50px);
-  }
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-50px); }
 }

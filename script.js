@@ -2,6 +2,8 @@
 const mainMenu = document.getElementById("main-menu");
 const gameContainer = document.getElementById("game-container");
 const startBtn = document.getElementById("start-btn");
+const viewLeaderboardBtn = document.getElementById("view-leaderboard-btn");
+const backBtn = document.getElementById("back-btn");
 const frog = document.getElementById("frog");
 const scoreDisplay = document.getElementById("score");
 const timerDisplay = document.getElementById("timer");
@@ -21,19 +23,20 @@ const submitNameBtn = document.getElementById("submit-name");
 const leaderboardScreen = document.getElementById("leaderboard");
 const leaderboardList = document.getElementById("leaderboard-list");
 const playAgainBtn = document.getElementById("play-again");
+const backToMenuBtn = document.getElementById("back-to-menu");
 
 // 🔊 Suara
 const jumpSound = document.getElementById("jump-sound");
 const correctSound = document.getElementById("correct-sound");
 const wrongSound = document.getElementById("wrong-sound");
-const scoreSound = document.getElementById("score-sound"); // 🔊 Suara skor
+const scoreSound = document.getElementById("score-sound");
 
 // 🐸 Variabel Game
 let isJumping = false;
 let score = 0;
 let lives = 5;
 let gravity = 0.9;
-let position = 0;
+let position = 80; // Mulai dari posisi dasar
 let rockInterval;
 let gameActive = false;
 let startTime;
@@ -57,6 +60,31 @@ startBtn.addEventListener("click", () => {
   mainMenu.classList.add("hidden");
   gameContainer.classList.remove("hidden");
   initGame();
+});
+
+// 📊 Lihat Leaderboard
+viewLeaderboardBtn.addEventListener("click", () => {
+  mainMenu.classList.add("hidden");
+  showLeaderboard();
+  leaderboardScreen.classList.remove("hidden");
+});
+
+// 🔙 Kembali dari Leaderboard ke Menu
+backToMenuBtn?.addEventListener("click", () => {
+  leaderboardScreen.classList.add("hidden");
+  mainMenu.classList.remove("hidden");
+});
+
+// 🔙 Kembali dari Game ke Menu
+backBtn.addEventListener("click", () => {
+  if (confirm("Yakin ingin kembali ke menu?")) {
+    gameActive = false;
+    clearInterval(rockInterval);
+    clearInterval(gameTimer);
+    clearInterval(questionTimer);
+    gameContainer.classList.add("hidden");
+    mainMenu.classList.remove("hidden");
+  }
 });
 
 // ⏱️ Timer
@@ -104,28 +132,48 @@ function showLeaderboard() {
   });
 }
 
-// 🐸 Lompat
+// 🐸 Lompat (tidak bisa double jump)
+// 🐸 Lompat (tidak bisa double jump)
 function jump() {
+  // ❌ Cegah lompat jika sudah melompat atau game tidak aktif
   if (isJumping || !gameActive) return;
+
   isJumping = true;
   frog.classList.add("jump");
   jumpSound.play();
 
-  let upSpeed = 18;
+  let upSpeed = 14;
+  position = 80; // ✅ Reset posisi awal
+
   const jumpInterval = setInterval(() => {
     position += upSpeed;
     upSpeed -= gravity;
     frog.style.bottom = position + "px";
 
-    if (upSpeed < -15) {
+    // Saat turun kembali ke tanah
+    if (position <= 80) {
       clearInterval(jumpInterval);
       isJumping = false;
       frog.classList.remove("jump");
-      position = 0;
       frog.style.bottom = "80px";
+      position = 80; // ✅ Reset ke dasar
     }
   }, 20);
 }
+
+// 🎮 Kontrol: Spasi atau klik
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && gameActive) {
+    e.preventDefault();
+    jump(); // ✅ Pastikan ini terpanggil
+  }
+});
+
+document.addEventListener("click", (e) => {
+  if (gameActive && e.target !== playerNameInput) {
+    jump(); // ✅ Klik di mana saja (kecuali input) untuk lompat
+  }
+});
 
 // 🪨 Buat Batu
 function createRock() {
@@ -143,7 +191,7 @@ function createRock() {
   }
 
   rock.style.left = "1000px";
-  rock.dataset.scored = "false"; // Cegah double skor
+  rock.dataset.scored = "false";
   gameContainer.appendChild(rock);
 
   let rockPosition = 1000;
@@ -174,7 +222,7 @@ function createRock() {
       return;
     }
 
-    // ✅ Skor +5 saat lewati batu biasa
+    // Skor +5 saat lewati batu
     if (rock.dataset.type === "normal" && rockPosition < 30 && rock.dataset.scored === "false") {
       rock.dataset.scored = "true";
       score += 5;
@@ -182,7 +230,6 @@ function createRock() {
       scoreSound.currentTime = 0;
       scoreSound.play();
 
-      // ✅ Tampilkan efek +5
       const popup = document.createElement("div");
       popup.className = "score-popup";
       popup.textContent = "+5";
@@ -197,7 +244,6 @@ function createRock() {
       if (score >= 100) completeGame();
     }
 
-    // Hapus batu
     if (rockPosition < -100) {
       clearInterval(moveRock);
       if (rock.parentNode) gameContainer.removeChild(rock);
@@ -257,7 +303,6 @@ function completeGame() {
   completionTime.textContent = `Waktu: ${totalTime} detik`;
   completionModal.classList.remove("hidden");
 
-  // ✅ Confetti saat skor 100
   confetti({
     particleCount: 150,
     spread: 180,
@@ -291,7 +336,7 @@ function initGame() {
   frog.style.bottom = "80px";
 
   startTimer();
-  rockInterval = setInterval(createRock, 2000);
+  rockInterval = setInterval(createRock, 3000);
 }
 
 // 🎮 Event Listeners
@@ -314,7 +359,7 @@ restartBtn.addEventListener("click", () => {
   initGame();
 });
 
-// Kontrol
+// Kontrol: Spasi atau klik
 document.addEventListener("keydown", (e) => {
   if (e.code === "Space" && gameActive) {
     e.preventDefault();
@@ -322,6 +367,6 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-document.addEventListener("click", () => {
-  if (gameActive) jump();
+document.addEventListener("click", (e) => {
+  if (gameActive && e.target !== playerNameInput) jump();
 });
