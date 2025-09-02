@@ -113,6 +113,22 @@ body {
   transform: scale(1.05);
 }
 
+/* Tombol kembali (di dalam game) */
+.back-button {
+  position: relative;
+  top: 15px;
+  left: 545px;
+  padding: 8px 15px;
+  font-size: 14px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 20;
+  transition: 0.2s;
+}
+
 .back-button:hover {
   background: #000;
   transform: translateY(-2px);
@@ -120,12 +136,15 @@ body {
 
 /* Game Container */
 #game-container {
-  width: 100vw;
-  height: 100vh;
-  max-width: 1000px;
-  max-height: 600px;
-  margin: 0 auto;
-  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 1200px;
+  max-height: 700px;
+  margin: 0 auto;       
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   overflow: hidden;
   border: 4px solid #4b2e83;
   border-radius: 12px;
@@ -487,8 +506,6 @@ body.dark-mode .back-button:hover { background: rgba(255,255,255,0.09) !importan
 /* efek skor popup */
 body.dark-mode .score-popup { color: #81c784 !important; }
 
-/* ================= SETTINGS ================= */
-
 /* Container tombol atas */
 .top-buttons {
   position: absolute;
@@ -553,4 +570,3 @@ body.dark-mode .score-popup { color: #81c784 !important; }
   background: #f44336;
   color: white;
 }
-
