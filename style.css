@@ -113,22 +113,6 @@ body {
   transform: scale(1.05);
 }
 
-/* Tombol kembali (di dalam game) */
-.back-button {
-  position: relative;
-  top: 15px;
-  left: 450px;
-  padding: 8px 15px;
-  font-size: 14px;
-  background: rgba(0,0,0,0.6);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 20;
-  transition: 0.2s;
-}
-
 .back-button:hover {
   background: #000;
   transform: translateY(-2px);
@@ -405,3 +389,168 @@ body {
   0% { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(-50px); }
 }
+/* ============ DARK MODE OVERRIDES ============ */
+/* Letakkan blok ini di paling bawah style.css */
+
+/* dasar */
+body.dark-mode {
+  background: #0f1720 !important;      /* ganti background image ke warna gelap */
+  background-image: none !important;
+  color: #e6eef8 !important;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* menu utama */
+body.dark-mode .menu {
+  background: linear-gradient(135deg, #222831, #0b3140) !important;
+  color: #ffffff !important;
+}
+body.dark-mode .menu h1,
+body.dark-mode .menu p {
+  color: #ffffff !important;
+  text-shadow: none !important;
+}
+body.dark-mode .menu button {
+  background: #2b3942 !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+}
+body.dark-mode .menu button:hover {
+  background: #3a4a53 !important;
+  transform: none !important;
+}
+
+/* game container & background */
+body.dark-mode #game-container {
+  background: linear-gradient(to bottom, #0b2a3b 60%, #063229 60%, #04271f 70%) !important;
+  border-color: #0e222a !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.6) !important;
+}
+
+/* teks HUD */
+body.dark-mode #score,
+body.dark-mode #timer,
+body.dark-mode #lives,
+body.dark-mode #instructions {
+  color: #e6eef8 !important;
+  text-shadow: none !important;
+  background: rgba(0,0,0,0.15);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* modals, kotak soal, leaderboard */
+body.dark-mode #name-modal,
+body.dark-mode #question-box,
+body.dark-mode #completion-modal,
+body.dark-mode #leaderboard,
+body.dark-mode #game-over {
+  background: #111217 !important;
+  color: #e6eef8 !important;
+  border-color: #333 !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
+}
+
+/* question box specifics */
+body.dark-mode #question-box h3 { color: #f6c85f !important; }
+body.dark-mode #question-box p { color: #e6eef8 !important; }
+
+/* opsi tombol */
+body.dark-mode #options button {
+  background: #24343b !important;
+  color: #eaf6ff !important;
+  border: 1px solid rgba(255,255,255,0.03) !important;
+}
+body.dark-mode #options button:hover {
+  background: #364b52 !important;
+}
+
+/* leaderboard list */
+body.dark-mode #leaderboard-list { background: #0d1214 !important; }
+body.dark-mode #leaderboard-list li {
+  border-bottom: 1px dashed #2b2b2b !important;
+  color: #e6eef8 !important;
+}
+
+/* awan / batu / sungai */
+body.dark-mode .cloud { background: rgba(255,255,255,0.08) !important; }
+body.dark-mode .rock { filter: brightness(0.7) !important; }
+body.dark-mode #river { background: #074f8a !important; border-top-color: #0a3e2f !important; }
+
+/* tombol kembali */
+body.dark-mode .back-button {
+  background: rgba(255,255,255,0.06) !important;
+  color: #e6eef8 !important;
+}
+body.dark-mode .back-button:hover { background: rgba(255,255,255,0.09) !important; }
+
+/* efek skor popup */
+body.dark-mode .score-popup { color: #81c784 !important; }
+
+/* ================= SETTINGS ================= */
+
+/* Container tombol atas */
+.top-buttons {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 20;
+}
+
+/* Container tombol atas */
+.top-buttons {
+  position: absolute;
+  top: 20px;           /* jarak dari atas */
+  left: 50%;           /* posisikan dari tengah horizontal */
+  transform: translateX(-50%);  /* geser supaya benar-benar di tengah */
+  display: flex;
+  gap: 10px;
+  z-index: 20;
+}
+
+/* Modal Settings */
+#settings-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  width: 350px;
+  max-width: 90vw;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  z-index: 300;
+}
+#settings-modal h2 {
+  margin-bottom: 15px;
+}
+#settings-modal input {
+  width: 90%;
+  padding: 10px;
+  margin: 10px 0 15px;
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  font-size: 16px;
+}
+#settings-modal button {
+  margin: 8px;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+#settings-modal #save-settings-btn {
+  background: #4CAF50;
+  color: white;
+}
+#settings-modal #close-settings-btn {
+  background: #f44336;
+  color: white;
+}
+

@@ -25,12 +25,35 @@ const restartGameBtn = document.getElementById("restart-game-btn");
 const leaderboardScreen = document.getElementById("leaderboard");
 const leaderboardList = document.getElementById("leaderboard-list");
 const backToMenuBtn = document.getElementById("back-to-menu");
+const toggleThemeBtn = document.getElementById("toggle-theme-btn"); // 🌙 tombol theme
+const settingsBtn = document.getElementById("settings-btn");
+const settingsModal = document.getElementById("settings-modal");
+const saveSettingsBtn = document.getElementById("save-settings-btn");
+const closeSettingsBtn = document.getElementById("close-settings-btn");
+const newUsernameInput = document.getElementById("new-username");
 
 // 🔊 Suara
 const jumpSound = document.getElementById("jump-sound");
 const correctSound = document.getElementById("correct-sound");
 const wrongSound = document.getElementById("wrong-sound");
 const scoreSound = document.getElementById("score-sound");
+
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark-mode");
+  toggleThemeBtn.textContent = "☀️ MODE TERANG";
+}
+
+toggleThemeBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+
+  if (document.body.classList.contains("dark-mode")) {
+    toggleThemeBtn.textContent = "☀️ MODE TERANG";
+    localStorage.setItem("theme", "dark");
+  } else {
+    toggleThemeBtn.textContent = "🌙 MODE GELAP";
+    localStorage.setItem("theme", "light");
+  }
+});
 
 // 🐸 Variabel Game
 let isJumping = false;
@@ -71,6 +94,57 @@ startBtn.addEventListener("click", () => {
   mainMenu.classList.add("hidden");
   nameModal.classList.remove("hidden");
 });
+
+// ⚙️ Settings
+if (settingsBtn) {
+  settingsBtn.addEventListener("click", () => {
+    gameActive = false; // pause game
+    clearInterval(rockInterval);
+    clearInterval(gameTimer);
+    clearInterval(speedIncreaseTimer);
+    settingsModal.classList.remove("hidden");
+  });
+}
+
+if (closeSettingsBtn) {
+  closeSettingsBtn.addEventListener("click", () => {
+    settingsModal.classList.add("hidden");
+    if (!gameOverScreen.classList.contains("hidden") || 
+        !completionModal.classList.contains("hidden")) return;
+    // resume game
+    gameActive = true;
+    startTimer();
+    rockInterval = setInterval(createRock, 3000);
+    speedIncreaseTimer = setInterval(() => {
+      if (gameActive && leafSpeed < MAX_SPEED) {
+        leafSpeed += 0.5;
+      }
+    }, 20000);
+  });
+}
+
+if (saveSettingsBtn) {
+  saveSettingsBtn.addEventListener("click", () => {
+    const newName = newUsernameInput.value.trim();
+    if (newName) {
+      currentPlayerName = newName;
+      alert("Nama berhasil diganti menjadi: " + newName);
+      newUsernameInput.value = "";
+    }
+
+    // resume game otomatis setelah save
+    if (!gameOverScreen.classList.contains("hidden") || 
+        !completionModal.classList.contains("hidden")) return;
+    gameActive = true;
+    startTimer();
+    rockInterval = setInterval(createRock, 3000);
+    speedIncreaseTimer = setInterval(() => {
+      if (gameActive && leafSpeed < MAX_SPEED) {
+        leafSpeed += 0.5;
+      }
+    }, 20000);
+  });
+}
 
 // 📊 Lihat Leaderboard
 viewLeaderboardBtn.addEventListener("click", () => {
