@@ -149,6 +149,25 @@ body {
   max-width: 300px;
 }
 
+/* Tombol back di modal nama */
+#back-to-main-btn {
+  background: #607D8B;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 10px;
+  width: 100%;
+  transition: 0.2s;
+}
+
+#back-to-main-btn:hover {
+  background: #455A64;
+}
+
 .menu button:hover {
   background: #FFC107;
   transform: scale(1.05);
