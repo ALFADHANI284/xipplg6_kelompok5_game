@@ -14,7 +14,7 @@
     <p>Selesaikan scorenya dengan menjawab setiap soal dengan benar, Selamat Bermain!!!!</p>
     <button id="start-btn">🎮 AYO MAIN SEKARANG</button>
     <button id="view-leaderboard-btn">🏆 LIHAT LEADERBOARD</button>
-    <button id="toggle-theme-btn">🌙 MODE GELAP</button> <!-- Tombol Dark Mode -->
+    <button id="toggle-theme-btn">🌙 MODE GELAP</button>
   </div>
 
   <!-- Form Nama Pemain -->
@@ -26,27 +26,36 @@
   </div>
 
   <!-- Game Container -->
-<div id="game-container" class="hidden">
-  <div class="top-buttons">
-    <button id="back-btn" class="back-button">⬅️ Kembali</button>
-    <button id="settings-btn" class="settings-button">⚙️ Settings</button>
-  </div>
-  <div id="score">Skor: 0/100</div>
-  <div id="timer">Waktu: 0s</div>
-  <div id="lives">❤️ ❤️ ❤️ ❤️ ❤️</div>
+  <div id="game-container" class="hidden">
+    <!-- Tombol Kembali & Settings (di tengah atas) -->
+    <div class="top-buttons">
+      <button id="back-btn">⬅️ Kembali</button>
+      <button id="settings-btn">⚙️ Settings</button>
+    </div>
+
+    <!-- HUD (Skor, Waktu, Nyawa) -->
+    <div id="score">Skor: 0/100</div>
+    <div id="timer">Waktu: 0s</div>
+    <div id="lives">❤️ ❤️ ❤️ ❤️ ❤️</div>
+
+    <!-- Elemen Visual -->
     <div class="cloud cloud1"></div>
     <div class="cloud cloud2"></div>
-    <div id="river"></div>  
+    <div id="river"></div>
     <div id="frog"></div>
+
+    <!-- Kotak Soal -->
     <div id="question-box" class="hidden">
       <h3>❓ Jawab Soal Ini!</h3>
       <p id="question-text"></p>
       <div id="options"></div>
       <div id="question-timer">⏳ <span id="question-time">15</span>s</div>
     </div>
+
+    <!-- Instruksi -->
     <div id="instructions">Tekan SPASI atau KLIK untuk melompat!</div>
-  </div> 
-  
+  </div>
+
   <!-- Modal Settings -->
   <div id="settings-modal" class="hidden">
     <h2>⚙️ Pengaturan</h2>
@@ -54,7 +63,7 @@
     <input type="text" id="new-username" placeholder="Nama baru" maxlength="15">
     <button id="save-settings-btn">💾 Simpan</button>
     <button id="close-settings-btn" class="btn-secondary">❌ Tutup</button>
-  </div>  
+  </div>
 
   <!-- Modal Skor 100 -->
   <div id="completion-modal" class="hidden">
@@ -88,15 +97,6 @@
   <!-- Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>
-
-  <!-- Modal Settings -->
-<div id="settings-modal" class="hidden">
-  <h2>⚙️ Pengaturan</h2>
-  <label for="new-username">Ganti Nama:</label>
-  <input type="text" id="new-username" placeholder="Nama baru" maxlength="15">
-  <button id="save-settings-btn">💾 Simpan</button>
-  <button id="close-settings-btn" class="btn-secondary">❌ Tutup</button>
-</div>
 
 </body>
 </html>

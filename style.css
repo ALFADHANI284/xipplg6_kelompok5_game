@@ -506,25 +506,31 @@ body.dark-mode .back-button:hover { background: rgba(255,255,255,0.09) !importan
 /* efek skor popup */
 body.dark-mode .score-popup { color: #81c784 !important; }
 
-/* Container tombol atas */
 .top-buttons {
-  position: absolute;
-  top: 20px;
-  left: 20px;
   display: flex;
   gap: 10px;
-  z-index: 20;
+  justify-content: center;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  width: 100%;
+  z-index: 10;
 }
 
-/* Container tombol atas */
-.top-buttons {
-  position: absolute;
-  top: 20px;           /* jarak dari atas */
-  left: 50%;           /* posisikan dari tengah horizontal */
-  transform: translateX(-50%);  /* geser supaya benar-benar di tengah */
-  display: flex;
-  gap: 10px;
-  z-index: 20;
+.top-buttons button {
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: 0.2s;
+  min-width: 90px;
+  max-width: 120px;
+}
+
+.top-buttons button:hover {
+  background: rgba(0, 0, 0, 0.8);
 }
 
 /* Modal Settings */
