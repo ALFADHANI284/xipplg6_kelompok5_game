@@ -66,20 +66,61 @@ body {
 
 /* Main Menu */
 .menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #4CAF50, #2196F3);
-  color: white;
+  justify-content: center;
   text-align: center;
-  z-index: 100;
+  height: 100vh;
+  padding: 20px;
 }
+
+/* Logo container - agar bisa diatur ukuran & posisi */
+.logo-container {
+  margin-bottom: 15px;
+}
+
+.logo {
+ width: 120px;                    /* Gedein jadi 120px */
+  height: auto;
+  border-radius: 12px;
+ 
+  background-color: transparent;   /* Tanpa latar belakang */
+  padding: 0;
+  border: none;
+  outline: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: bounce  3s ease-in-out infinite; /* Animasi floating */
+}
+
+/* Animasi floating (naik-turun perlahan) */
+@keyframes bounce {
+  0%, 100% { transform: scale(1.3); }
+  50% { transform: scale(2); }
+}
+
+.logo:hover {
+  transform: scale(1.1);
+}
+
+/* Judul game */
+#main-menu h1 {
+  font-size: 3em;
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 10px 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Deskripsi */
+#main-menu p {
+  color: white;
+  font-size: 1.1em;
+  margin-bottom: 30px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+} 
 
 .menu h1 {
   font-size: 3rem;
