@@ -590,3 +590,88 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("click", (e) => {
   if (gameActive && e.target !== playerNameInput) jump();
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  // === Elemen DOM ===
+  const chooseSkinBtn = document.getElementById('choose-skin-btn');
+  const skinModal = document.getElementById('skin-modal');
+  const saveSkinBtn = document.getElementById('save-skin-btn');
+  const closeSkinBtn = document.getElementById('close-skin-btn');
+  const startBtn = document.getElementById('start-btn');
+  const mainMenu = document.getElementById('main-menu');
+  const nameModal = document.getElementById('name-modal');
+
+  // Event: Buka modal
+  chooseSkinBtn?.addEventListener('click', () => {
+    skinModal?.classList.remove('hidden');
+  });
+
+  // Event: Pilih skin
+  document.querySelectorAll('.skin-option').forEach(option => {
+    option.addEventListener('click', function () {
+      document.querySelectorAll('.skin-option').forEach(opt => opt.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+
+  // Event: Simpan skin
+  saveSkinBtn?.addEventListener('click', () => {
+    const selectedOption = document.querySelector('.skin-option.selected');
+    if (!selectedOption) return;
+
+    // Ambil nama skin dari class
+    const classes = selectedOption.className.split(' ');
+    const skinName = classes.find(cls => cls.startsWith('frog-')); // hasil: "frog-5"
+
+    if (!skinName) {
+      console.error("Skin tidak ditemukan!");
+      return;
+    }
+
+    // Terapkan ke katak
+    const frog = document.getElementById('frog');
+    if (frog) {
+      frog.className = 'frog';
+      frog.classList.add(skinName);
+    }
+
+    // Simpan ke localStorage
+    localStorage.setItem('frog-skin', skinName);
+
+    skinModal?.classList.add('hidden');
+  });
+
+  // Event: Tutup modal
+  closeSkinBtn?.addEventListener('click', () => {
+    skinModal?.classList.add('hidden');
+  });
+
+  // Tutup dengan klik luar
+  window.addEventListener('click', (e) => {
+    if (e.target === skinModal) {
+      skinModal?.classList.add('hidden');
+    }
+  });
+
+  // Saat klik "Mainkan"
+  startBtn.addEventListener("click", () => {
+    mainMenu.classList.add("hidden");
+    nameModal.classList.remove("hidden");
+
+    // Atur skin saat modal nama muncul
+    const savedSkin = localStorage.getItem('frog-skin') || 'frog-0';
+    const frog = document.getElementById('frog');
+    if (frog) {
+      frog.className = 'frog';
+      frog.classList.add(savedSkin);
+    }
+  });
+
+  // Atur skin saat halaman dimuat
+  const savedSkin = localStorage.getItem('frog-skin') || 'frog-0';
+  const frog = document.getElementById('frog');
+  if (frog) {
+    frog.className = 'frog';
+    frog.classList.add(savedSkin);
+  }
+});

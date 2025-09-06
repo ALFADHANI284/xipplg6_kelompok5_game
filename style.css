@@ -207,10 +207,11 @@ body {
 #lives { left: 20px; }
 
 #frog {
-  width: 50px;
-  height: 40px;
-  background: url('frog.png') no-repeat;
-  background-size: cover;
+  width: 60px;
+  height: 60px;
+  background-size: contain;
+   background-repeat: no-repeat;
+  background-position: center;
   position: absolute;
   bottom: 80px;
   left: 80px;
@@ -708,4 +709,90 @@ body.dark-mode .score-popup { color: #81c784 !important; }
   filter: drop-shadow(0 0 5px gold);
   border: 2px solid gold;
   border-radius: 5px;
+}
+
+/* Skin Option */
+.skin-option {
+  width: 60px;
+  height: 60px;
+  border: 3px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 5px;
+  transition: transform 0.2s, border 0.2s;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.frog-0 { background-image: url('skins/frog-0.png'); }
+.frog-1 { background-image: url('skins/frog-1.png'); }
+.frog-2 { background-image: url('skins/frog-2.png'); }
+.frog-3 { background-image: url('skins/frog-3.png'); }
+.frog-4 { background-image: url('skins/frog-4.png'); }
+.frog-5 { background-image: url('skins/frog-5.png'); }
+.frog-6 { background-image: url('skins/frog-6.png'); }
+.frog-7 { background-image: url('skins/frog-7.png'); }
+.frog-8 { background-image: url('skins/frog-8.png'); }
+/* Efek hover & selected */
+
+.skin-option:hover {
+  transform: scale(1.1);
+}
+
+.skin-option.selected {
+  border-color: #007BFF;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+/* Tombol Skin */
+/* Wadah tombol — kiri dan kanan */
+/* Wadah tombol — tetap pakai flex */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  width: 100%;
+}
+
+/* Atur ukuran tombol lebih kecil */
+.skin-btn {
+  padding: 8px 16px;           /* Kecilkan padding */
+  font-size: 0.9em;            /* Kecilkan teks */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin: 0 190px;
+  min-width: 200px;             /* Minimal lebar */
+}
+
+/* Tombol Simpan */
+.save-btn {
+  background-color: #4CAF50;
+  color: white;
+  box-shadow: 0 3px 6px rgba(76, 175, 80, 0.3);
+}
+
+.save-btn:hover {
+  background-color: #45a049;
+  transform: scale(1.03);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4);
+}
+
+/* Tombol Tutup */
+.close-btn {
+  background-color: #f44336;
+  color: white;
+  box-shadow: 0 3px 6px rgba(244, 67, 54, 0.3);
+}
+
+.close-btn:hover {
+  background-color: #d32f2f;
+  transform: scale(1.03);
+  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.4);
+}
+#skin-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  justify-items: center;
 }
