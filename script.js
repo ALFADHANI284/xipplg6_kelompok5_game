@@ -69,9 +69,9 @@ let questionTimer;
 let currentPlayerName = "";
 let speedIncreaseTimer;
 let leafSpeed = 7;
-let currentLevel = 1;
-let levelTarget = 100; // Target skor per level
-let levelProgress = 0; // Skor dalam level ini
+let currentLevel = 1; // ✅ Sudah benar
+let levelTarget = 100;
+let levelProgress = 0;
 const MAX_QUESTION_POPUPS = 8;
 const BASE_SPEED = 7;
 const MAX_SPEED = 12;
@@ -95,14 +95,16 @@ function updateLevelDisplay() {
   document.getElementById("level").textContent = `Lv: ${currentLevel} | ${levelProgress}/${levelTarget}`;
 }
 
-// 🎉 Selesai Level + Animasi
 function completeLevel() {
   gameActive = false;
   clearInterval(rockInterval);
   clearInterval(gameTimer);
   clearInterval(speedIncreaseTimer);
 
-  // Simpan progres pemain
+  // ⬆️ Naikkan level
+  currentLevel++;
+
+  // 📦 Simpan progres pemain
   const progressData = {
     name: currentPlayerName,
     currentLevel: currentLevel,
@@ -110,21 +112,25 @@ function completeLevel() {
     completedAt: new Date().toLocaleDateString()
   };
   localStorage.setItem(`progress_${currentPlayerName}`, JSON.stringify(progressData));
+  localStorage.setItem('currentLevel', currentLevel); // 🔑 Simpan level ke localStorage
 
-  // Tampilkan modal
+  // 🔄 Update kunci skin setelah naik level
+  updateSkinLocks(currentLevel);
+
+  // 📢 Tampilkan modal
   completionModal.classList.remove("hidden");
   completionTime.innerHTML = `
-    🎉 <strong>Level ${currentLevel} Selesai!</strong><br>
+    🎉 <strong>Level ${currentLevel - 1} Selesai!</strong><br>
     Skor: ${score}<br>
     Waktu: ${Math.floor((Date.now() - startTime) / 1000)} detik<br>
-    <img src="badge${currentLevel}.jpg" alt="Badge Level ${currentLevel}" class="badge-img">
+    <img src="badge${currentLevel - 1}.jpg" alt="Badge Level ${currentLevel - 1}" class="badge-img">
   `;
   restartGameBtn.textContent = "➡️ Lanjut ke Level Berikutnya";
 
   // 🕺 Animasi Katak Menang!
   frog.classList.add("win");
 
-  // Confetti
+  // 🎊 Confetti!
   confetti({
     particleCount: 150,
     spread: 180,
@@ -132,15 +138,13 @@ function completeLevel() {
     colors: ['#FFD700', '#4CAF50', '#2196F3', '#F44336']
   });
 
-  // Tombol lanjut
+  // 🔁 Event: Lanjut ke level berikutnya
   restartGameBtn.onclick = () => {
     completionModal.classList.add("hidden");
-    // Hapus animasi
     frog.classList.remove("win");
-    currentLevel++;
     levelTarget += 100;
     levelProgress = 0;
-    initGame();
+    initGame(); // mulai level baru
   };
 }
 
@@ -591,8 +595,50 @@ document.addEventListener("click", (e) => {
   if (gameActive && e.target !== playerNameInput) jump();
 });
 
+// 🔓 Skor untuk membuka skin
+const skinUnlockLevels = {
+  'frog-0': 0,   // unlock di Level 1
+  'frog-1': 1,
+  'frog-2': 2,
+  'frog-3': 2,
+  'frog-4': 2,
+  'frog-5': 3,
+  'frog-6': 3,
+  'frog-7': 4,
+  'frog-8': 5
+};
+
+// Fungsi klik skin
+function handleClick() {
+  document.querySelectorAll('.skin-option').forEach(opt => opt.classList.remove('selected'));
+  this.classList.add('selected');
+}
+
+function updateSkinLocks(currentLevel = 1) {
+  document.querySelectorAll('.skin-option').forEach(option => {
+    option.removeEventListener('click', handleClick); // bersihkan event lama
+
+    const classes = option.className.split(' ');
+    const skinName = classes.find(cls => cls.startsWith('frog-'));
+    if (!skinName) return;
+
+    const unlockLevel = skinUnlockLevels[skinName];
+
+    if (currentLevel < unlockLevel) {
+      option.classList.add('skin-locked');
+      option.setAttribute('data-unlock', `Lv. ${unlockLevel}`);
+    } else {
+      option.classList.remove('skin-locked');
+      option.removeAttribute('data-unlock');
+      option.addEventListener('click', handleClick);
+    }
+  });
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
   // === Elemen DOM ===
+  const savedLevel = parseInt(localStorage.getItem('currentLevel')) || 1;
   const chooseSkinBtn = document.getElementById('choose-skin-btn');
   const skinModal = document.getElementById('skin-modal');
   const saveSkinBtn = document.getElementById('save-skin-btn');
@@ -601,44 +647,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const mainMenu = document.getElementById('main-menu');
   const nameModal = document.getElementById('name-modal');
 
+   // ✅ Update kunci skin saat halaman dimuat
+  updateSkinLocks(savedLevel);
+
   // Event: Buka modal
   chooseSkinBtn?.addEventListener('click', () => {
     skinModal?.classList.remove('hidden');
-  });
-
-  // Event: Pilih skin
-  document.querySelectorAll('.skin-option').forEach(option => {
-    option.addEventListener('click', function () {
-      document.querySelectorAll('.skin-option').forEach(opt => opt.classList.remove('selected'));
-      this.classList.add('selected');
-    });
-  });
-
-  // Event: Simpan skin
-  saveSkinBtn?.addEventListener('click', () => {
-    const selectedOption = document.querySelector('.skin-option.selected');
-    if (!selectedOption) return;
-
-    // Ambil nama skin dari class
-    const classes = selectedOption.className.split(' ');
-    const skinName = classes.find(cls => cls.startsWith('frog-')); // hasil: "frog-5"
-
-    if (!skinName) {
-      console.error("Skin tidak ditemukan!");
-      return;
-    }
-
-    // Terapkan ke katak
-    const frog = document.getElementById('frog');
-    if (frog) {
-      frog.className = 'frog';
-      frog.classList.add(skinName);
-    }
-
-    // Simpan ke localStorage
-    localStorage.setItem('frog-skin', skinName);
-
-    skinModal?.classList.add('hidden');
   });
 
   // Event: Tutup modal
@@ -665,13 +679,35 @@ document.addEventListener('DOMContentLoaded', () => {
       frog.className = 'frog';
       frog.classList.add(savedSkin);
     }
+
+    // Update kunci skin saat modal nama muncul
+    updateSkinLocks(currentLevel);
   });
 
-  // Atur skin saat halaman dimuat
-  const savedSkin = localStorage.getItem('frog-skin') || 'frog-0';
-  const frog = document.getElementById('frog');
-  if (frog) {
-    frog.className = 'frog';
-    frog.classList.add(savedSkin);
-  }
+  // Event: Simpan skin
+  saveSkinBtn?.addEventListener('click', () => {
+    const selectedOption = document.querySelector('.skin-option.selected');
+    if (!selectedOption) return;
+
+    // Ambil nama skin dari class
+    const classes = selectedOption.className.split(' ');
+    const skinName = classes.find(cls => cls.startsWith('frog-'));
+
+    if (!skinName) {
+      console.error("Skin tidak ditemukan!");
+      return;
+    }
+
+    // Terapkan ke katak
+    const frog = document.getElementById('frog');
+    if (frog) {
+      frog.className = 'frog';
+      frog.classList.add(skinName);
+    }
+
+    // Simpan ke localStorage
+    localStorage.setItem('frog-skin', skinName);
+
+    skinModal?.classList.add('hidden');
+  });
 });
