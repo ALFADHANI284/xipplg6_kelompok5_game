@@ -468,13 +468,12 @@ body {
   0% { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(-50px); }
 }
-/* ============ DARK MODE OVERRIDES ============ */
-/* Letakkan blok ini di paling bawah style.css */
 
-/* dasar */
+
 body.dark-mode {
-  background: #0f1720 !important;      /* ganti background image ke warna gelap */
-  background-image: none !important;
+  /* warna fallback + gambar wallpaper gelap */
+  background: #0f1720 url('dark-background.png') no-repeat center center fixed !important;
+  background-size: cover !important;
   color: #e6eef8 !important;
   transition: background 0.3s ease, color 0.3s ease;
 }
@@ -635,4 +634,10 @@ body.dark-mode .score-popup { color: #81c784 !important; }
 #settings-modal #close-settings-btn {
   background: #f44336;
   color: white;
+}
+body.dark-mode {
+  background: url('dark-background.png') no-repeat center center fixed !important;
+  background-size: cover !important;
+  color: #e6eef8 !important;
+  transition: background 0.3s ease, color 0.3s ease;
 }
