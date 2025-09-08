@@ -149,25 +149,6 @@ body {
   max-width: 300px;
 }
 
-/* Tombol back di modal nama */
-#back-to-main-btn {
-  background: #607D8B;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  margin-top: 10px;
-  width: 100%;
-  transition: 0.2s;
-}
-
-#back-to-main-btn:hover {
-  background: #455A64;
-}
-
 .menu button:hover {
   background: #FFC107;
   transform: scale(1.05);
@@ -226,10 +207,11 @@ body {
 #lives { left: 20px; }
 
 #frog {
-  width: 50px;
-  height: 40px;
-  background: url('frog.png') no-repeat;
-  background-size: cover;
+  width: 60px;
+  height: 60px;
+  background-size: contain;
+   background-repeat: no-repeat;
+  background-position: center;
   position: absolute;
   bottom: 80px;
   left: 80px;
@@ -634,10 +616,4 @@ body.dark-mode .score-popup { color: #81c784 !important; }
 #settings-modal #close-settings-btn {
   background: #f44336;
   color: white;
-}
-body.dark-mode {
-  background: url('dark-background.png') no-repeat center center fixed !important;
-  background-size: cover !important;
-  color: #e6eef8 !important;
-  transition: background 0.3s ease, color 0.3s ease;
 }

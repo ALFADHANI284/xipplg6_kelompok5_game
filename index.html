@@ -1,112 +1,140 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Katak Lompat Edukasi</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
+  <!DOCTYPE html>
+  <html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Katak Lompat Edukasi</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
 
-  <!-- Main Menu -->
-  <div id="main-menu" class="menu">
-  <!-- Logo di atas -->
-  <div class="logo-container">
-    <img src="logo.png" alt="Logo Frogy Jump" class="logo">
-  </div>
-
-  <!-- Judul game -->
-  <h1>FROGY JUMP</h1>
-  
-  <!-- Deskripsi -->
-  <p>Selesaikan scorenya dengan menjawab setiap soal dengan benar, Selamat Bermain!!!!</p>
-
-  <!-- Tombol-tombol -->
-  <button id="start-btn">🎮 AYO MAIN SEKARANG</button>
-  <button id="view-leaderboard-btn">🏆 LIHAT LEADERBOARD</button>
-  <button id="toggle-theme-btn">🌙 MODE GELAP</button>
-</div>
-
-<div id="name-modal" class="hidden">
-  <h2>🎮 Selamat Datang, di Frogy Jump</h2>
-  <p>Masukkan nama Anda untuk memulai permainan:</p>
-  <input type="text" id="player-name-input" placeholder="Nama Anda" maxlength="15">
-  <button id="start-game-btn">Mulai Game</button>
-  <button id="back-to-main-btn" class="btn-secondary">⬅️ Kembali</button>
-</div>
-
-  <!-- Game Container -->
-  <div id="game-container" class="hidden">
-    <!-- Tombol Kembali & Settings (di tengah atas) -->
-    <div class="top-buttons">
-      <button id="back-btn">⬅️ Kembali</button>
-      <button id="settings-btn">⚙️ Settings</button>
+    <!-- Main Menu -->
+    <div id="main-menu" class="menu">
+    <!-- Logo di atas -->
+    <div class="logo-container">
+      <img src="logo.png" alt="Logo Frogy Jump" class="logo">
     </div>
 
-    <!-- HUD (Skor, Waktu, Nyawa) -->
-    <div id="score">Skor: 0/100</div>
-    <div id="timer">Waktu: 0s</div>
-    <div id="lives">❤️ ❤️ ❤️ ❤️ ❤️</div>
+    <!-- Judul game -->
+    <h1>FROGY JUMP</h1>
+    
+    <!-- Deskripsi -->
+    <p>Selesaikan scorenya dengan menjawab setiap soal dengan benar, Selamat Bermain!!!!</p>
 
-    <!-- Elemen Visual -->
-    <div class="cloud cloud1"></div>
-    <div class="cloud cloud2"></div>
-    <div id="river"></div>
-    <div id="frog"></div>
+    <!-- Tombol-tombol -->
+    <button id="start-btn">🎮 AYO MAIN SEKARANG</button>
+    <button id="view-leaderboard-btn">🏆 LIHAT LEADERBOARD</button>
+    <button id="toggle-theme-btn">🌙 MODE GELAP</button>
+    <button id="choose-skin-btn">🎨 PILIH SKIN</button>
+  </div>
 
-    <!-- Kotak Soal -->
-    <div id="question-box" class="hidden">
-      <h3>❓ Jawab Soal Ini!</h3>
-      <p id="question-text"></p>
-      <div id="options"></div>
-      <div id="question-timer">⏳ <span id="question-time">15</span>s</div>
+    <!-- Form Nama Pemain -->
+    <div id="name-modal" class="hidden">
+      <h2>🎮 Selamat Datang, di Frogy Jump</h2>
+      <p>Masukkan nama Anda untuk memulai permainan:</p>
+      <input type="text" id="player-name-input" placeholder="Nama Anda" maxlength="15">
+      <button id="start-game-btn">Mulai Game</button>
     </div>
 
-    <!-- Instruksi -->
-    <div id="instructions">Tekan SPASI atau KLIK untuk melompat!</div>
+    <!-- Game Container -->
+    <div id="game-container" class="hidden">
+      <!-- Tombol Kembali & Settings (di tengah atas) -->
+      <div class="top-buttons">
+        <button id="back-btn">⬅ Kembali</button>
+        <button id="settings-btn">⚙ Settings</button>
+      </div>
+
+      <!-- HUD (Skor, Waktu, Nyawa) -->
+      <div id="score">Skor: 0/100</div>
+      <div id="timer">Waktu: 0s</div>
+      <div id="lives">❤ ❤ ❤ ❤ ❤</div>
+      <div id="level">Level: 1</div>
+
+      <!-- Elemen Visual -->
+      <div class="cloud cloud1"></div>
+      <div class="cloud cloud2"></div>
+      <div id="river"></div>
+      <div id="frog"></div>
+
+      <!-- Kotak Soal -->
+      <div id="question-box" class="hidden">
+        <h3>❓ Jawab Soal Ini!</h3>
+        <p id="question-text"></p>
+        <div id="options"></div>
+        <div id="question-timer">⏳ <span id="question-time">15</span>s</div>
+      </div>
+
+      <!-- Instruksi -->
+      <div id="instructions">Tekan SPASI atau KLIK untuk melompat!</div>
+    </div>
+
+    <!-- Modal Settings -->
+    <div id="settings-modal" class="hidden">
+      <h2>⚙ Pengaturan</h2>
+      <label for="new-username">Ganti Nama:</label>
+      <input type="text" id="new-username" placeholder="Nama baru" maxlength="15">
+      <button id="save-settings-btn">💾 Simpan</button>
+      <button id="close-settings-btn" class="btn-secondary">❌ Tutup</button>
+    </div>
+
+  <!-- Modal Pilih Skin -->
+  <div id="skin-modal" class="hidden">
+    <div class="modal-content">
+      <h3>🎨 Pilih Skin Katak</h3>
+      <div id="skin-selector">
+        <div class="skin-option frog-0"></div>
+        <div class="skin-option frog-1"></div>
+        <div class="skin-option frog-2"></div>
+        <div class="skin-option frog-3"></div>
+        <div class="skin-option frog-4"></div>
+        <div class="skin-option frog-5"></div>
+        <div class="skin-option frog-6"></div>
+        <div class="skin-option frog-7"></div>
+        <div class="skin-option frog-8"></div>
+      </div>
+      <!-- Wadah tombol (flex untuk kiri-kanan) -->
+      <div class="button-group">
+        <button id="close-skin-btn" class="skin-btn close-btn">❌ Tutup</button>
+        <button id="save-skin-btn" class="skin-btn save-btn">💾 Simpan</button>
+      </div>
+  </div>
+    
   </div>
 
-  <!-- Modal Settings -->
-  <div id="settings-modal" class="hidden">
-    <h2>⚙️ Pengaturan</h2>
-    <label for="new-username">Ganti Nama:</label>
-    <input type="text" id="new-username" placeholder="Nama baru" maxlength="15">
-    <button id="save-settings-btn">💾 Simpan</button>
-    <button id="close-settings-btn" class="btn-secondary">❌ Tutup</button>
-  </div>
+    <!-- Modal Skor 100 -->
+    <div id="completion-modal" class="hidden">
+      <h2>🏆 SELAMAT! SKOR 100</h2>
+      <p id="completion-time">Waktu: 0 detik</p>
+      <p>Anda telah menyelesaikan permainan!</p>
+      <button id="restart-game-btn">Main Lagi</button>
+    </div>
 
-  <!-- Modal Skor 100 -->
-  <div id="completion-modal" class="hidden">
-    <h2>🏆 SELAMAT! SKOR 100</h2>
-    <p id="completion-time">Waktu: 0 detik</p>
-    <p>Anda telah menyelesaikan permainan!</p>
-    <button id="restart-game-btn">Main Lagi</button>
-  </div>
 
-  <!-- Leaderboard -->
-  <div id="leaderboard" class="hidden">
-    <h2>🏆 TOP 10 PEMAIN</h2>
-    <ul id="leaderboard-list"></ul>
-    <button id="back-to-menu" class="btn-secondary">⬅️ Kembali ke Menu</button>
-  </div>
 
-  <!-- Game Over -->
-  <div id="game-over" class="hidden">
-    <h2>💀 GAME OVER</h2>
-    <p>Skor: <span id="final-score">0</span></p>
-    <p>Waktu: <span id="final-time">0</span> detik</p>
-    <button id="restart-btn">🔄 Coba Lagi</button>
-  </div>
+    <!-- Leaderboard -->
+    <div id="leaderboard" class="hidden">
+      <h2>🏆 TOP 10 PEMAIN</h2>
+      <ul id="leaderboard-list"></ul>
+      <button id="back-to-menu" class="btn-secondary">⬅ Kembali ke Menu</button>
+    </div>
 
-  <!-- Audio -->
-  <audio id="jump-sound" src="https://www.soundjay.com/button/sounds/button-09.mp3"></audio>
-  <audio id="correct-sound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
-  <audio id="wrong-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
-  <audio id="score-sound" src="https://www.soundjay.com/misc/sounds/beep-07.mp3"></audio>
+    <!-- Game Over -->
+    <div id="game-over" class="hidden">
+      <h2>💀 GAME OVER</h2>
+      <p>Skor: <span id="final-score">0</span></p>
+      <p>Waktu: <span id="final-time">0</span> detik</p>
+      <button id="restart-btn">🔄 Coba Lagi</button>
+    </div>
 
-  <!-- Confetti -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-  <script src="script.js"></script>
+    <!-- Audio -->
+    <audio id="jump-sound" src="https://www.soundjay.com/button/sounds/button-09.mp3"></audio>
+    <audio id="correct-sound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
+    <audio id="wrong-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+    <audio id="score-sound" src="https://www.soundjay.com/misc/sounds/beep-07.mp3"></audio>
 
-</body>
-</html>
+    <!-- Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="script.js"></script>
+
+  </body>
+  </html>
