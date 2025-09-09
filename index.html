@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Katak Lompat Edukasi</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
 
@@ -12,7 +12,7 @@
     <div id="main-menu" class="menu">
     <!-- Logo di atas -->
     <div class="logo-container">
-      <img src="logo.png" alt="Logo Frogy Jump" class="logo">
+      <img src="assets/Logo.png" alt="Logo Frogy Jump" class="logo">
     </div>
 
     <!-- Judul game -->
@@ -22,19 +22,20 @@
     <p>Selesaikan scorenya dengan menjawab setiap soal dengan benar, Selamat Bermain!!!!</p>
 
     <!-- Tombol-tombol -->
-    <button id="start-btn">🎮 AYO MAIN SEKARANG</button>
-    <button id="view-leaderboard-btn">🏆 LIHAT LEADERBOARD</button>
+    <button id="start-btn">MULAI GAME</button>
+    <button id="view-leaderboard-btn">🏆LEADERBOARD</button>
     <button id="toggle-theme-btn">🌙 MODE GELAP</button>
-    <button id="choose-skin-btn">🎨 PILIH SKIN</button>
+    <!-- <button id="choose-skin-btn">🎨 PILIH SKIN</button> -->
   </div>
 
     <!-- Form Nama Pemain -->
-    <div id="name-modal" class="hidden">
-      <h2>🎮 Selamat Datang, di Frogy Jump</h2>
-      <p>Masukkan nama Anda untuk memulai permainan:</p>
-      <input type="text" id="player-name-input" placeholder="Nama Anda" maxlength="15">
-      <button id="start-game-btn">Mulai Game</button>
-    </div>
+<div id="name-modal" class="hidden">
+  <h2>🎮 Selamat Datang, di Frogy Jump</h2>
+  <p>Masukkan nama Anda untuk memulai permainan:</p>
+  <input type="text" id="player-name-input" placeholder="Nama Anda" maxlength="15">
+  <button id="start-game-btn">Mulai Game</button>
+  <button id="back-to-main-btn" class="btn-secondary">⬅ Kembali</button>
+</div>
 
     <!-- Game Container -->
     <div id="game-container" class="hidden">
@@ -70,12 +71,104 @@
 
     <!-- Modal Settings -->
     <div id="settings-modal" class="hidden">
-      <h2>⚙ Pengaturan</h2>
-      <label for="new-username">Ganti Nama:</label>
+  <h2>⚙ Pengaturan</h2>
+
+  <div class="settings-group">
+    <div class="group-title">👤 Akun & Tampilan</div>
+
+    <div class="form-row">
+      <label for="new-username">Ganti Nama</label>
       <input type="text" id="new-username" placeholder="Nama baru" maxlength="15">
-      <button id="save-settings-btn">💾 Simpan</button>
-      <button id="close-settings-btn" class="btn-secondary">❌ Tutup</button>
     </div>
+
+    <div class="form-row">
+      <label for="theme-switch">Mode Gelap</label>
+      <label class="switch">
+        <input type="checkbox" id="theme-switch">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label for="reduced-motion-switch">Kurangi Animasi</label>
+      <label class="switch">
+        <input type="checkbox" id="reduced-motion-switch">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="group-title">🔊 Audio</div>
+
+    <div class="form-row">
+      <label for="volume-master">Volume Utama</label>
+      <input type="range" id="volume-master" min="0" max="100" value="60">
+      <span class="range-value" id="volume-master-val">60%</span>
+    </div>
+
+    <div class="form-row">
+      <label for="mute-switch">Bisu (Mute)</label>
+      <label class="switch">
+        <input type="checkbox" id="mute-switch">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="group-title">🎮 Gameplay</div>
+
+    <div class="form-row">
+      <label for="difficulty-select">Tingkat Kesulitan</label>
+      <select id="difficulty-select">
+        <option value="easy">Mudah</option>
+        <option value="normal" selected>Normal</option>
+        <option value="hard">Sulit</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="question-rate-select">Frekuensi Soal</label>
+      <select id="question-rate-select">
+        <option value="rare">Jarang</option>
+        <option value="normal" selected>Normal</option>
+        <option value="often">Sering</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label for="toggle-instructions-switch">Tampilkan Instruksi</label>
+      <label class="switch">
+        <input type="checkbox" id="toggle-instructions-switch" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label for="river-effect-switch">Efek Kilau Sungai</label>
+      <label class="switch">
+        <input type="checkbox" id="river-effect-switch" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <div class="group-title">🗂 Data</div>
+
+    <div class="button-row">
+      <button id="reset-progress-btn" class="btn-danger">🔁 Reset Progress</button>
+      <button id="reset-leaderboard-btn" class="btn-danger">🧹 Bersihkan Leaderboard</button>
+    </div>
+  </div>
+
+  <div class="settings-actions">
+    <button id="save-settings-btn" class="btn-primary">💾 Simpan</button>
+    <button id="close-settings-btn" class="btn-secondary">❌ Tutup</button>
+  </div>
+</div>
+
 
   <!-- Modal Pilih Skin -->
   <div id="skin-modal" class="hidden">
@@ -134,7 +227,7 @@
 
     <!-- Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script src="script.js"></script>
+    <script src="js/script.js"></script>
 
   </body>
   </html>
