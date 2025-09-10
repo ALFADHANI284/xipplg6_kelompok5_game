@@ -660,7 +660,6 @@ body.dark-mode .score-popup { color: #81c784 !important; }
 }
 
 #settings-modal input[type="range"]{
-  -webkit-appearance: none;
   width: 220px;
   height: 6px;
   border-radius: 6px;
