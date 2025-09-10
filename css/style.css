@@ -101,16 +101,15 @@ body {
 }
 
 .logo {
- width: 120px;                    /* Gedein jadi 120px */
+  width: 120px;
   height: auto;
   border-radius: 12px;
- 
-  background-color: transparent;   /* Tanpa latar belakang */
+  background-color: transparent;
   padding: 0;
   border: none;
   outline: none;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: bounce  3s ease-in-out infinite; /* Animasi floating */
+  animation: bounce 3s ease-in-out infinite;
 }
 
 /* Animasi floating (naik-turun perlahan) */
@@ -119,9 +118,7 @@ body {
   50% { transform: scale(2); }
 }
 
-.logo:hover {
-  transform: scale(1.1);
-}
+.logo:hover { transform: scale(1.1); }
 
 /* Judul game */
 #main-menu h1 {
@@ -223,8 +220,21 @@ body {
 #timer { right: 20px; top: 50px; }
 #lives { left: 20px; }
 
+/* Tambahan kecil agar Level terlihat */
+#level {
+  position: absolute;
+  top: 20px;
+  left: 10%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  z-index: 10;
+}
+
+/* FIX PATH gambar katak (sebelumnya ../assets/...) */
 #frog {
-  background: url(../assets/skins/frog-0.png);
+  background: url(assets/skins/frog-0.png);
   width: 60px;
   height: 60px;
   background-size: contain;
@@ -281,7 +291,7 @@ body {
 .rock {
   width: 40px;
   height: 30px;
-  background: url('../assets/batu.png') no-repeat;
+  background: url('assets/batu.png') no-repeat;
   background-size: cover;
   position: absolute;
   bottom: 75px;
@@ -370,11 +380,9 @@ body {
 }
 
 /* Modal */
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
-/* Game Over & Completion */
+/* Game Over & Completion & Leaderboard */
 #game-over, #completion-modal, #leaderboard {
   position: absolute;
   top: 50%;
@@ -407,9 +415,7 @@ body {
   width: 100%;
 }
 
-#back-to-menu {
-  background: #607D8B;
-}
+#back-to-menu { background: #607D8B; }
 
 #leaderboard-list {
   list-style: none;
@@ -469,9 +475,9 @@ body {
   100% { opacity: 0; transform: translateY(-50px); }
 }
 
+/* ===================== DARK MODE ===================== */
 
 body.dark-mode {
-  /* warna fallback + gambar wallpaper gelap */
   background: #0f1720 url('dark-background.png') no-repeat center center fixed !important;
   background-size: cover !important;
   color: #e6eef8 !important;
@@ -509,7 +515,8 @@ body.dark-mode #game-container {
 body.dark-mode #score,
 body.dark-mode #timer,
 body.dark-mode #lives,
-body.dark-mode #instructions {
+body.dark-mode #instructions,
+body.dark-mode #level {
   color: #e6eef8 !important;
   text-shadow: none !important;
   background: rgba(0,0,0,0.15);
@@ -539,9 +546,7 @@ body.dark-mode #options button {
   color: #eaf6ff !important;
   border: 1px solid rgba(255,255,255,0.03) !important;
 }
-body.dark-mode #options button:hover {
-  background: #364b52 !important;
-}
+body.dark-mode #options button:hover { background: #364b52 !important; }
 
 /* leaderboard list */
 body.dark-mode #leaderboard-list { background: #0d1214 !important; }
@@ -564,6 +569,8 @@ body.dark-mode .back-button:hover { background: rgba(255,255,255,0.09) !importan
 
 /* efek skor popup */
 body.dark-mode .score-popup { color: #81c784 !important; }
+
+/* ===================== TOP BUTTONS ===================== */
 
 .top-buttons {
   display: flex;
@@ -592,16 +599,24 @@ body.dark-mode .score-popup { color: #81c784 !important; }
   background: rgba(0, 0, 0, 0.8);
 }
 
-/* Modal Settings */
+/* ===================== SETTINGS MODAL (diperbaiki posisi) ===================== */
+
 #settings-modal{
-  margin-left: 10rem;
-  width: 50%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(50%, 620px);
+  max-width: 92vw;
+  max-height: 85vh;
+  overflow: auto;
   padding: 24px;
   border-radius: 16px;
   background: linear-gradient(to bottom right, rgba(255,255,255,.94), rgba(255,255,255,.88));
   border: 1px solid rgba(0,0,0,.06);
   box-shadow: 0 14px 32px rgba(0,0,0,.22);
   backdrop-filter: blur(10px);
+  z-index: 250;
 }
 
 #settings-modal h2{
@@ -633,10 +648,7 @@ body.dark-mode .score-popup { color: #81c784 !important; }
 }
 .form-row:last-child{ border-bottom: none; }
 
-.form-row > label{
-  font-size: 14px;
-  opacity: .9;
-}
+.form-row > label{ font-size: 14px; opacity: .9; }
 
 #settings-modal input[type="text"],
 #settings-modal select{
@@ -663,9 +675,7 @@ body.dark-mode .score-popup { color: #81c784 !important; }
   border: 2px solid #4CAF50;
   box-shadow: 0 2px 8px rgba(0,0,0,.25);
 }
-.range-value{
-  min-width: 48px; text-align: right; font-weight: 600; opacity: .9;
-}
+.range-value{ min-width: 48px; text-align: right; font-weight: 600; opacity: .9; }
 
 /* Switch */
 .switch{
@@ -691,9 +701,7 @@ body.dark-mode .score-popup { color: #81c784 !important; }
 .switch input:checked + .slider{ background: #4CAF50; }
 .switch input:checked + .slider:before{ transform: translateX(24px); }
 
-.button-row{
-  display: flex; gap: 10px; flex-wrap: wrap;
-}
+.button-row{ display: flex; gap: 10px; flex-wrap: wrap; }
 
 .settings-actions{
   display: flex; gap: 10px; justify-content: flex-end;
@@ -718,7 +726,7 @@ body.dark-mode .score-popup { color: #81c784 !important; }
 }
 .btn-danger:hover{ background: #8E1E1E; }
 
-/* Light/Dark adapt from your theme */
+/* Light/Dark adapt dari tema */
 body.dark-mode #settings-modal{
   background: linear-gradient(to bottom right, rgba(22,24,30,.94), rgba(18,20,26,.88)) !important;
   border: 1px solid rgba(255,255,255,.06);
@@ -743,4 +751,117 @@ body.no-river #river::after{ display: none !important; }
 body.reduced-motion *{
   animation: none !important;
   transition: none !important;
+}
+
+/* ===================== SKIN MODAL (baru/ditambahkan) ===================== */
+
+#skin-modal {
+  position: fixed;
+  inset: 0;
+  display: none;              /* dikontrol oleh .hidden */
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.55);
+  z-index: 300;               /* di atas name-modal */
+}
+
+#skin-modal:not(.hidden) { display: flex; }
+
+#skin-modal .modal-content {
+  background: #ffffff;
+  width: 620px;
+  max-width: 95vw;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 14px 32px rgba(0,0,0,.3);
+  border: 1px solid rgba(0,0,0,.06);
+}
+
+#skin-modal h3 {
+  margin-bottom: 8px;
+  color: #2E7D32;
+  text-align: center;
+}
+
+#skin-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.skin-option {
+  width: 110px;
+  height: 110px;
+  border-radius: 14px;
+  border: 2px solid rgba(0,0,0,.12);
+  background: #e8f5e9;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  position: relative;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.skin-option:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,.12); }
+
+.skin-option.selected {
+  outline: 3px solid #4CAF50;
+  box-shadow: 0 0 0 4px rgba(76,175,80,.15);
+}
+
+.skin-option.skin-locked {
+  filter: grayscale(1) brightness(.75);
+  cursor: not-allowed;
+  border-color: rgba(0,0,0,.2);
+}
+.skin-option.skin-locked::after {
+  content: attr(data-unlock);
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.45);
+  color: #fff; font-weight: 700; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: inherit;
+}
+
+/* Tombol pada modal skin */
+.button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.skin-btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.save-btn { background: #2E7D32; color: #fff; }
+.save-btn:hover { background: #1B5E20; }
+
+.close-btn { background: #2B3942; color: #fff; }
+.close-btn:hover { background: #1F2A30; }
+
+/* Dark mode untuk modal skin */
+body.dark-mode #skin-modal .modal-content {
+  background: #111217;
+  color: #e6eef8;
+  border: 1px solid rgba(255,255,255,.06);
+}
+body.dark-mode .skin-option { border-color: rgba(255,255,255,.08); background: #182227; }
+body.dark-mode .skin-option.skin-locked { border-color: rgba(255,255,255,.08); }
+body.dark-mode .save-btn { background: #2E7D32; }
+body.dark-mode .close-btn { background: rgba(255,255,255,.08); }
+
+/* Gambar badge ketika level selesai */
+.badge-img {
+  display: block;
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin: 10px auto 0;
 }

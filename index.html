@@ -1,233 +1,208 @@
-  <!DOCTYPE html>
-  <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Katak Lompat Edukasi</title>
-    <link rel="stylesheet" href="css/style.css" />
-  </head>
-  <body>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Frogy Jump</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
 
-    <!-- Main Menu -->
-    <div id="main-menu" class="menu">
-    <!-- Logo di atas -->
+  <!-- Main Menu -->
+  <div id="main-menu" class="menu">
     <div class="logo-container">
       <img src="assets/Logo.png" alt="Logo Frogy Jump" class="logo">
     </div>
 
-    <!-- Judul game -->
     <h1>FROGY JUMP</h1>
-    
-    <!-- Deskripsi -->
     <p>Selesaikan scorenya dengan menjawab setiap soal dengan benar, Selamat Bermain!!!!</p>
 
-    <!-- Tombol-tombol -->
     <button id="start-btn">MULAI GAME</button>
-    <button id="view-leaderboard-btn">🏆LEADERBOARD</button>
+    <button id="view-leaderboard-btn">🏆 LEADERBOARD</button>
     <button id="toggle-theme-btn">🌙 MODE GELAP</button>
-    <!-- <button id="choose-skin-btn">🎨 PILIH SKIN</button> -->
   </div>
 
-    <!-- Form Nama Pemain -->
-<div id="name-modal" class="hidden">
-  <h2>🎮 Selamat Datang, di Frogy Jump</h2>
-  <p>Masukkan nama Anda untuk memulai permainan:</p>
-  <input type="text" id="player-name-input" placeholder="Nama Anda" maxlength="15">
-  <button id="start-game-btn">Mulai Game</button>
-  <button id="back-to-main-btn" class="btn-secondary">⬅ Kembali</button>
-</div>
+  <!-- Modal Nama + Pilih Skin -->
+  <div id="name-modal" class="hidden modal">
+    <h2>🎮 Selamat Datang di Frogy Jump</h2>
+    <p>Masukkan nama Anda untuk memulai permainan:</p>
+    <input type="text" id="player-name-input" placeholder="Nama Anda" maxlength="15" />
+    <button id="start-game-btn">Mulai Game</button>
+    <!-- tombol pilih skin ditaruh di sini -->
+    <button id="back-to-main-btn" class="btn-secondary">⬅ Kembali</button>
+  </div>
 
-    <!-- Game Container -->
-    <div id="game-container" class="hidden">
-      <!-- Tombol Kembali & Settings (di tengah atas) -->
-      <div class="top-buttons">
-        <button id="back-btn">⬅ Kembali</button>
-        <button id="settings-btn">⚙ Settings</button>
+  <!-- Game Container -->
+  <div id="game-container" class="hidden">
+    <div class="top-buttons">
+      <button id="back-btn">⬅ Kembali</button>
+      <button id="settings-btn">⚙ Settings</button>
+    </div>
+
+    <div id="score">Skor: 0/100</div>
+    <div id="timer">Waktu: 0s</div>
+    <div id="lives">❤️❤️❤️❤️❤️</div>
+    <div id="level">Lv: 1 | 0/100</div>
+
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div id="river"></div>
+    <div id="frog" class="frog"></div>
+
+    <!-- Kotak Soal -->
+    <div id="question-box" class="hidden modal">
+      <h3>❓ Jawab Soal Ini!</h3>
+      <p id="question-text"></p>
+      <div id="options"></div>
+      <div id="question-timer">⏳ <span id="question-time">15</span>s</div>
+    </div>
+
+    <div id="instructions">Tekan SPASI atau KLIK untuk melompat!</div>
+  </div>
+
+  <!-- Modal Settings -->
+  <div id="settings-modal" class="hidden modal settings">
+    <h2>⚙ Pengaturan</h2>
+
+    <div class="settings-group">
+      <div class="group-title">👤 Akun & Tampilan</div>
+      <div class="form-row">
+        <label for="new-username">Ganti Nama</label>
+        <input type="text" id="new-username" placeholder="Nama baru" maxlength="15">
       </div>
-
-      <!-- HUD (Skor, Waktu, Nyawa) -->
-      <div id="score">Skor: 0/100</div>
-      <div id="timer">Waktu: 0s</div>
-      <div id="lives">❤ ❤ ❤ ❤ ❤</div>
-      <div id="level">Level: 1</div>
-
-      <!-- Elemen Visual -->
-      <div class="cloud cloud1"></div>
-      <div class="cloud cloud2"></div>
-      <div id="river"></div>
-      <div id="frog"></div>
-
-      <!-- Kotak Soal -->
-      <div id="question-box" class="hidden">
-        <h3>❓ Jawab Soal Ini!</h3>
-        <p id="question-text"></p>
-        <div id="options"></div>
-        <div id="question-timer">⏳ <span id="question-time">15</span>s</div>
+      <div class="form-row">
+        <label for="theme-switch">Mode Gelap</label>
+        <label class="switch">
+          <input type="checkbox" id="theme-switch">
+          <span class="slider"></span>
+        </label>
       </div>
-
-      <!-- Instruksi -->
-      <div id="instructions">Tekan SPASI atau KLIK untuk melompat!</div>
+      <div class="form-row">
+        <label for="reduced-motion-switch">Kurangi Animasi</label>
+        <label class="switch">
+          <input type="checkbox" id="reduced-motion-switch">
+          <span class="slider"></span>
+        </label>
+      </div>
     </div>
 
-    <!-- Modal Settings -->
-    <div id="settings-modal" class="hidden">
-  <h2>⚙ Pengaturan</h2>
-
-  <div class="settings-group">
-    <div class="group-title">👤 Akun & Tampilan</div>
-
-    <div class="form-row">
-      <label for="new-username">Ganti Nama</label>
-      <input type="text" id="new-username" placeholder="Nama baru" maxlength="15">
+    <div class="settings-group">
+      <div class="group-title">🔊 Audio</div>
+      <div class="form-row">
+        <label for="volume-master">Volume Utama</label>
+        <input type="range" id="volume-master" min="0" max="100" value="60">
+        <span class="range-value" id="volume-master-val">60%</span>
+      </div>
+      <div class="form-row">
+        <label for="mute-switch">Bisu (Mute)</label>
+        <label class="switch">
+          <input type="checkbox" id="mute-switch">
+          <span class="slider"></span>
+        </label>
+      </div>
     </div>
 
-    <div class="form-row">
-      <label for="theme-switch">Mode Gelap</label>
-      <label class="switch">
-        <input type="checkbox" id="theme-switch">
-        <span class="slider"></span>
-      </label>
+    <div class="settings-group">
+      <div class="group-title">🎮 Gameplay</div>
+      <div class="form-row">
+        <label for="difficulty-select">Tingkat Kesulitan</label>
+        <select id="difficulty-select">
+          <option value="easy">Mudah</option>
+          <option value="normal" selected>Normal</option>
+          <option value="hard">Sulit</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="question-rate-select">Frekuensi Soal</label>
+        <select id="question-rate-select">
+          <option value="rare">Jarang</option>
+          <option value="normal" selected>Normal</option>
+          <option value="often">Sering</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="toggle-instructions-switch">Tampilkan Instruksi</label>
+        <label class="switch">
+          <input type="checkbox" id="toggle-instructions-switch" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="form-row">
+        <label for="river-effect-switch">Efek Kilau Sungai</label>
+        <label class="switch">
+          <input type="checkbox" id="river-effect-switch" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
     </div>
 
-    <div class="form-row">
-      <label for="reduced-motion-switch">Kurangi Animasi</label>
-      <label class="switch">
-        <input type="checkbox" id="reduced-motion-switch">
-        <span class="slider"></span>
-      </label>
-    </div>
-  </div>
-
-  <div class="settings-group">
-    <div class="group-title">🔊 Audio</div>
-
-    <div class="form-row">
-      <label for="volume-master">Volume Utama</label>
-      <input type="range" id="volume-master" min="0" max="100" value="60">
-      <span class="range-value" id="volume-master-val">60%</span>
+    <div class="settings-group">
+      <div class="group-title">🗂 Data</div>
+      <div class="button-row">
+        <button id="reset-progress-btn" class="btn-danger">🔁 Reset Progress</button>
+        <button id="reset-leaderboard-btn" class="btn-danger">🧹 Bersihkan Leaderboard</button>
+      </div>
     </div>
 
-    <div class="form-row">
-      <label for="mute-switch">Bisu (Mute)</label>
-      <label class="switch">
-        <input type="checkbox" id="mute-switch">
-        <span class="slider"></span>
-      </label>
-    </div>
-  </div>
-
-  <div class="settings-group">
-    <div class="group-title">🎮 Gameplay</div>
-
-    <div class="form-row">
-      <label for="difficulty-select">Tingkat Kesulitan</label>
-      <select id="difficulty-select">
-        <option value="easy">Mudah</option>
-        <option value="normal" selected>Normal</option>
-        <option value="hard">Sulit</option>
-      </select>
-    </div>
-
-    <div class="form-row">
-      <label for="question-rate-select">Frekuensi Soal</label>
-      <select id="question-rate-select">
-        <option value="rare">Jarang</option>
-        <option value="normal" selected>Normal</option>
-        <option value="often">Sering</option>
-      </select>
-    </div>
-
-    <div class="form-row">
-      <label for="toggle-instructions-switch">Tampilkan Instruksi</label>
-      <label class="switch">
-        <input type="checkbox" id="toggle-instructions-switch" checked>
-        <span class="slider"></span>
-      </label>
-    </div>
-
-    <div class="form-row">
-      <label for="river-effect-switch">Efek Kilau Sungai</label>
-      <label class="switch">
-        <input type="checkbox" id="river-effect-switch" checked>
-        <span class="slider"></span>
-      </label>
+    <div class="settings-actions">
+      <button id="save-settings-btn" class="btn-primary">💾 Simpan</button>
+      <button id="close-settings-btn" class="btn-secondary">❌ Tutup</button>
     </div>
   </div>
-
-  <div class="settings-group">
-    <div class="group-title">🗂 Data</div>
-
-    <div class="button-row">
-      <button id="reset-progress-btn" class="btn-danger">🔁 Reset Progress</button>
-      <button id="reset-leaderboard-btn" class="btn-danger">🧹 Bersihkan Leaderboard</button>
-    </div>
-  </div>
-
-  <div class="settings-actions">
-    <button id="save-settings-btn" class="btn-primary">💾 Simpan</button>
-    <button id="close-settings-btn" class="btn-secondary">❌ Tutup</button>
-  </div>
-</div>
-
 
   <!-- Modal Pilih Skin -->
-  <div id="skin-modal" class="hidden">
-    <div class="modal-content">
+  <div id="skin-modal" class="hidden skin-modal-backdrop">
+    <div class="skin-modal">
       <h3>🎨 Pilih Skin Katak</h3>
-      <div id="skin-selector">
-        <div class="skin-option frog-0"></div>
-        <div class="skin-option frog-1"></div>
-        <div class="skin-option frog-2"></div>
-        <div class="skin-option frog-3"></div>
-        <div class="skin-option frog-4"></div>
-        <div class="skin-option frog-5"></div>
-        <div class="skin-option frog-6"></div>
-        <div class="skin-option frog-7"></div>
-        <div class="skin-option frog-8"></div>
+      <div id="skin-selector" class="skin-grid">
+        <div class="skin-option frog-0" data-unlock="Lv. 0"></div>
+        <div class="skin-option frog-1" data-unlock="Lv. 1"></div>
+        <div class="skin-option frog-2" data-unlock="Lv. 2"></div>
+        <div class="skin-option frog-3" data-unlock="Lv. 2"></div>
+        <div class="skin-option frog-4" data-unlock="Lv. 2"></div>
+        <div class="skin-option frog-5" data-unlock="Lv. 3"></div>
+        <div class="skin-option frog-6" data-unlock="Lv. 3"></div>
+        <div class="skin-option frog-7" data-unlock="Lv. 4"></div>
+        <div class="skin-option frog-8" data-unlock="Lv. 5"></div>
       </div>
-      <!-- Wadah tombol (flex untuk kiri-kanan) -->
       <div class="button-group">
         <button id="close-skin-btn" class="skin-btn close-btn">❌ Tutup</button>
         <button id="save-skin-btn" class="skin-btn save-btn">💾 Simpan</button>
       </div>
+    </div>
   </div>
-    
+
+  <!-- Completion -->
+  <div id="completion-modal" class="hidden modal">
+    <h2>🏆 SELAMAT! SKOR 100</h2>
+    <p id="completion-time">Waktu: 0 detik</p>
+    <p>Anda telah menyelesaikan permainan!</p>
+    <button id="restart-game-btn">Main Lagi</button>
   </div>
 
-    <!-- Modal Skor 100 -->
-    <div id="completion-modal" class="hidden">
-      <h2>🏆 SELAMAT! SKOR 100</h2>
-      <p id="completion-time">Waktu: 0 detik</p>
-      <p>Anda telah menyelesaikan permainan!</p>
-      <button id="restart-game-btn">Main Lagi</button>
-    </div>
+  <!-- Leaderboard -->
+  <div id="leaderboard" class="hidden modal">
+    <h2>🏆 TOP 10 PEMAIN</h2>
+    <ul id="leaderboard-list"></ul>
+    <button id="back-to-menu" class="btn-secondary">⬅ Kembali ke Menu</button>
+  </div>
 
+  <!-- Game Over -->
+  <div id="game-over" class="hidden modal danger">
+    <h2>💀 GAME OVER</h2>
+    <p>Skor: <span id="final-score">0</span></p>
+    <p>Waktu: <span id="final-time">0</span> detik</p>
+    <button id="restart-btn">🔄 Coba Lagi</button>
+  </div>
 
+  <!-- Audio -->
+  <audio id="jump-sound" src="https://www.soundjay.com/button/sounds/button-09.mp3"></audio>
+  <audio id="correct-sound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
+  <audio id="wrong-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+  <audio id="score-sound" src="https://www.soundjay.com/misc/sounds/beep-07.mp3"></audio>
 
-    <!-- Leaderboard -->
-    <div id="leaderboard" class="hidden">
-      <h2>🏆 TOP 10 PEMAIN</h2>
-      <ul id="leaderboard-list"></ul>
-      <button id="back-to-menu" class="btn-secondary">⬅ Kembali ke Menu</button>
-    </div>
-
-    <!-- Game Over -->
-    <div id="game-over" class="hidden">
-      <h2>💀 GAME OVER</h2>
-      <p>Skor: <span id="final-score">0</span></p>
-      <p>Waktu: <span id="final-time">0</span> detik</p>
-      <button id="restart-btn">🔄 Coba Lagi</button>
-    </div>
-
-    <!-- Audio -->
-    <audio id="jump-sound" src="https://www.soundjay.com/button/sounds/button-09.mp3"></audio>
-    <audio id="correct-sound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
-    <audio id="wrong-sound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
-    <audio id="score-sound" src="https://www.soundjay.com/misc/sounds/beep-07.mp3"></audio>
-
-    <!-- Confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script src="js/script.js"></script>
-
-  </body>
-  </html>
+  <!-- Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
