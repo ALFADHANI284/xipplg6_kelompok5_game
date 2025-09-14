@@ -864,3 +864,23 @@ body.dark-mode .close-btn { background: rgba(255,255,255,.08); }
   object-fit: contain;
   margin: 10px auto 0;
 }
+
+/* Kotak Soal Trigger */
+#question-trigger {
+  position: absolute;
+  bottom: 70px;
+  left: 800px;
+  z-index: 3;
+  opacity: 0;
+  transition: left 0.1s linear;
+}
+
+#question-trigger.active {
+  opacity: 1;
+  left: 100px;
+  pointer-events: auto;
+}
+
+#question-trigger img {
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+}

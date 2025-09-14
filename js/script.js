@@ -1,5 +1,5 @@
 /* =========================================
-   Frogy Jump — Main Script (cleaned + fixed)
+   Frogy Jump — Final Version (Soal Muncul Saat Tabrak Kotak Soal)
    ========================================= */
 
 // === Elemen DOM ===
@@ -22,10 +22,10 @@ const questionTimeDisplay = document.getElementById("question-time");
 const gameOverScreen      = document.getElementById("game-over");
 const finalScore          = document.getElementById("final-score");
 const finalTime           = document.getElementById("final-time");
-const restartBtn          = document.getElementById("restart-btn");
+const restartGameBtn      = document.getElementById("restart-game-btn");
 const completionModal     = document.getElementById("completion-modal");
 const completionTime      = document.getElementById("completion-time");
-const restartGameBtn      = document.getElementById("restart-game-btn");
+const restartBtn          = document.getElementById("restart-btn");
 const leaderboardScreen   = document.getElementById("leaderboard");
 const leaderboardList     = document.getElementById("leaderboard-list");
 const backToMenuBtn       = document.getElementById("back-to-menu");
@@ -36,7 +36,7 @@ const saveSettingsBtn     = document.getElementById("save-settings-btn");
 const closeSettingsBtn    = document.getElementById("close-settings-btn");
 const newUsernameInput    = document.getElementById("new-username");
 
-// Tombol “Kembali” pada modal nama (support 2 kemungkinan id)
+// Tombol “Kembali” pada modal nama
 const backNameBtn = document.getElementById("Kembali") || document.getElementById("back-to-main-btn");
 
 // 🔊 Suara
@@ -45,28 +45,22 @@ const correctSound= document.getElementById("correct-sound");
 const wrongSound  = document.getElementById("wrong-sound");
 const scoreSound  = document.getElementById("score-sound");
 
-/* ================== SKIN UTILS (DITAMBAHKAN) ================== */
-// Kunci level untuk skin (sudah ada di bawah juga untuk UI locking — biarkan duplikat data ini agar util terisolasi)
-const SKIN_KEYS = ['frog-0','frog-1','frog-2','frog-3','frog-4','frog-5','frog-6','frog-7','frog-8'];
-const SKIN_UNLOCK_LEVELS = {
-  'frog-0': 0,'frog-1': 1,'frog-2': 2,'frog-3': 2,'frog-4': 2,'frog-5': 3,'frog-6': 3,'frog-7': 4,'frog-8': 5
-};
-// Path gambar skin (ubah jika pakai penamaan tanpa minus)
-const SKIN_IMAGE = (key) => `assets/skins/${key}.png`;
+// 🟩 TRIGGER KOTAK SOAL
+const questionTrigger = document.getElementById("question-trigger");
 
-// Set tampilan skin pada katak + persist
+/* ================== SKIN UTILS ================== */
+const SKIN_KEYS = ['frog-0','frog-1','frog-2','frog-3','frog-4','frog-5','frog-6','frog-7','frog-8'];
+const SKIN_IMAGE = (key) => `/assets/skins/${key}.png`;
+
 function setFrogSkin(key) {
   if (!frog) return;
   if (!SKIN_KEYS.includes(key)) key = 'frog-0';
-  // pakai inline background agar tidak bergantung CSS eksternal
   frog.style.backgroundImage = `url('${SKIN_IMAGE(key)}')`;
-  // tetap pasang class agar kompatibel dengan CSS kamu kalau ada
   frog.className = 'frog';
   frog.classList.add(key);
   try { localStorage.setItem('frog-skin', key); } catch {}
 }
 
-// Warnai thumbnail skin di modal
 function hydrateSkinThumbnails() {
   document.querySelectorAll('#skin-selector .skin-option').forEach(opt => {
     const skinName = [...opt.classList].find(c => c.startsWith('frog-'));
@@ -77,23 +71,20 @@ function hydrateSkinThumbnails() {
   });
 }
 
-// Tandai selected di grid skin
 function markSelectedSkinTile(key) {
   document.querySelectorAll('#skin-selector .skin-option').forEach(opt => opt.classList.remove('selected'));
   const tile = document.querySelector(`#skin-selector .skin-option.${key}`);
   if (tile && !tile.classList.contains('skin-locked')) tile.classList.add('selected');
 }
 
-// Suntik tombol "Pilih Skin" ke Name Modal (sekali saja)
 function ensureInlinePickSkinButton() {
   if (!nameModal) return;
-  if (document.getElementById('pick-skin-inline')) return; // sudah ada
+  if (document.getElementById('pick-skin-inline')) return;
   const btn = document.createElement('button');
   btn.id = 'pick-skin-inline';
   btn.type = 'button';
   btn.textContent = '🎨 Pilih Skin';
   btn.style.marginTop = '10px';
-  // styling ringan agar konsisten
   btn.style.padding = '12px 25px';
   btn.style.borderRadius = '8px';
   btn.style.border = 'none';
@@ -102,7 +93,6 @@ function ensureInlinePickSkinButton() {
   btn.style.background = '#2B3942';
   btn.style.color = '#fff';
 
-  // letakkan sebelum tombol "Kembali" jika ada, kalau tidak letakkan di akhir
   const backBtnInModal = document.getElementById('back-to-main-btn') || document.getElementById('Kembali');
   if (backBtnInModal && backBtnInModal.parentNode === nameModal) {
     nameModal.insertBefore(btn, backBtnInModal);
@@ -114,8 +104,7 @@ function ensureInlinePickSkinButton() {
     const skinModal = document.getElementById('skin-modal');
     if (!skinModal) return;
     hydrateSkinThumbnails();
-    updateSkinLocks(currentLevel);          // kunci sesuai level berjalan
-    // preselect pakai saved skin
+    updateSkinLocks(currentLevel);
     const saved = localStorage.getItem('frog-skin') || 'frog-0';
     markSelectedSkinTile(saved);
     skinModal.classList.remove('hidden');
@@ -124,7 +113,7 @@ function ensureInlinePickSkinButton() {
 
 /* ============================================================= */
 
-// 🌙 Mode Gelap (inisialisasi aman)
+// 🌙 Mode Gelap
 if (localStorage.getItem("theme") === "dark") {
   document.body.classList.add("dark-mode");
   if (toggleThemeBtn) toggleThemeBtn.textContent = "☀️ MODE TERANG";
@@ -158,12 +147,23 @@ let levelTarget = 100;
 let levelProgress = 0;
 let questionsAnswered = 0;
 
-// Konstanta & probabilitas
-const MAX_QUESTION_POPUPS = 8;
-const BASE_SPEED  = 7;
-const MAX_SPEED   = 12;
-const QUESTION_CHANCE = 0.25;
-const POWERUP_CHANCE   = 0.08;
+// Jumlah kotak soal per level
+const QUESTIONS_PER_LEVEL = {
+  1: 5,
+  2: 4,
+  3: 3,
+  4: 2,
+  5: 1
+};
+
+// Kecepatan multiplier per level
+const SPEED_MULTIPLIER = {
+  1: 1,
+  2: 2,
+  3: 3,
+  4: 3.5,
+  5: 4
+};
 
 // 📚 Soal
 const questions = [
@@ -179,17 +179,16 @@ const questions = [
   { q: "Berapa kaki yang dimiliki katak?", a: ["2", "4", "6"], correct: 1 }
 ];
 
-// ================== Helpers (UI) ==================
+// ================== Helpers ==================
 const show = (el) => el && el.classList.remove("hidden");
 const hide = (el) => el && el.classList.add("hidden");
 
 function openNameModal() {
   show(nameModal);
   hide(mainMenu);
-  ensureInlinePickSkinButton();     // << tambahkan tombol pilih skin di modal
-  hydrateSkinThumbnails();          // << render thumbnail
-  updateSkinLocks(currentLevel);    // << kunci skin sesuai level sekarang
-  // preselect skin tersimpan
+  ensureInlinePickSkinButton();
+  hydrateSkinThumbnails();
+  updateSkinLocks(currentLevel);
   markSelectedSkinTile(localStorage.getItem('frog-skin') || 'frog-0');
   setTimeout(() => playerNameInput && playerNameInput.focus(), 0);
 }
@@ -198,22 +197,8 @@ function closeNameModal() {
   show(mainMenu);
 }
 
-// Tutup modal nama via ESC & klik di luar
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && nameModal && !nameModal.classList.contains("hidden")) {
-    closeNameModal();
-  }
-});
-document.addEventListener("click", (e) => {
-  if (!nameModal || nameModal.classList.contains("hidden")) return;
-
-  const skinModal = document.getElementById("skin-modal");
-  const clickInsideName = nameModal.contains(e.target);
-  const skinOpen = skinModal && !skinModal.classList.contains("hidden");
-  const clickInsideSkin = skinOpen && skinModal.contains(e.target);
-
-  // HANYA tutup kalau klik benar-benar di area luar SEMUA modal
-  if (!clickInsideName && !clickInsideSkin) {
     closeNameModal();
   }
 });
@@ -249,7 +234,7 @@ function completeLevel() {
     🎉 <strong>Level ${currentLevel - 1} Selesai!</strong><br>
     Skor: ${score}<br>
     Waktu: ${Math.floor((Date.now() - startTime) / 1000)} detik<br>
-    <img src="badge${currentLevel - 1}.jpg" alt="Badge Level ${currentLevel - 1}" class="badge-img">
+    <img src="/assets/badges/badge${currentLevel - 1}.png" alt="Badge Level ${currentLevel - 1}" class="badge-img">
   `;
   show(completionModal);
   restartGameBtn.textContent = "➡️ Lanjut ke Level Berikutnya";
@@ -274,7 +259,7 @@ function completeLevel() {
   };
 }
 
-// ================== Event Listeners (Menu/Modal) ==================
+// ================== Event Listeners ==================
 if (startBtn) startBtn.addEventListener("click", openNameModal);
 if (backNameBtn) backNameBtn.addEventListener("click", closeNameModal);
 
@@ -316,7 +301,6 @@ if (startGameBtn) {
     currentPlayerName = name;
     try { localStorage.setItem("frog_player_name", name); } catch {}
 
-    // Terapkan skin tersimpan sebelum masuk game
     const chosenSkin = localStorage.getItem('frog-skin') || 'frog-0';
     setFrogSkin(chosenSkin);
 
@@ -337,6 +321,7 @@ if (settingsBtn) {
   });
 }
 if (closeSettingsBtn) closeSettingsBtn.addEventListener("click", () => hide(settingsModal));
+
 if (saveSettingsBtn) {
   saveSettingsBtn.addEventListener("click", () => {
     const newName = (newUsernameInput?.value || "").trim();
@@ -346,6 +331,20 @@ if (saveSettingsBtn) {
       alert("Nama berhasil diganti menjadi: " + newName);
       newUsernameInput.value = "";
     }
+
+    // ✅ RESUME GAME
+    if (!gameOverScreen.classList.contains("hidden") || 
+        !completionModal.classList.contains("hidden")) return;
+
+    gameActive = true;
+    startTimer();
+    rockInterval = setInterval(createRock, 3000);
+    speedIncreaseTimer = setInterval(() => {
+      if (gameActive && leafSpeed < MAX_SPEED) {
+        leafSpeed += 0.5;
+      }
+    }, 20000);
+
     hide(settingsModal);
   });
 }
@@ -401,7 +400,6 @@ function showLeaderboard() {
 }
 
 // ================== Kontrol & Fisika ==================
-// 👉 Helper: kecilkan hitbox agar tidak “terserempet”
 function insetRect(rect, inset = 6) {
   return {
     left: rect.left + inset,
@@ -414,16 +412,10 @@ function insetRect(rect, inset = 6) {
 function jump() {
   if (isJumping || !gameActive) return;
   isJumping = true;
-
-  // Sound
   if (jumpSound) { jumpSound.currentTime = 0; jumpSound.play().catch(()=>{}); }
-
-  // Visual: miring sedikit (tanpa translateY agar collider stabil)
   frog.style.transform = "rotate(12deg)";
-
-  // Fisika lompat (Y murni dari bottom)
-  let vUp = 16;              // sedikit lebih tinggi dari sebelumnya
-  const g = gravity;         // 0.9
+  let vUp = 16;
+  const g = gravity;
   position = Math.max(position, 80);
 
   const jumpInterval = setInterval(() => {
@@ -432,18 +424,16 @@ function jump() {
     if (position < 80) position = 80;
     frog.style.bottom = position + "px";
 
-    // Mendarat
     if (vUp < -16 && position <= 80) {
       clearInterval(jumpInterval);
       isJumping = false;
-      frog.style.transform = ""; // reset tilt
+      frog.style.transform = "";
       position = 80;
       frog.style.bottom = "80px";
     }
-  }, 16); // lebih halus
+  }, 16);
 }
 
-// Hanya lompat jika tidak ada modal apa pun yang sedang terbuka
 function anyModalOpen() {
   const modals = [nameModal, questionBox, completionModal, gameOverScreen, settingsModal, leaderboardScreen];
   return modals.some(m => m && !m.classList.contains("hidden"));
@@ -462,15 +452,18 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// ================== Object Spawner (Rock / Power-up / Soal) ==================
+// ================== BATU (Rintangan Saja) ==================
 function createRock() {
   if (!gameActive) return;
 
   const rock = document.createElement("div");
   rock.classList.add("rock");
 
-  const isQuestionRock = (questionsAnswered < MAX_QUESTION_POPUPS) && (Math.random() < QUESTION_CHANCE);
-  const isPowerUp      = (currentLevel >= 2) && (Math.random() < POWERUP_CHANCE);
+  rock.style.backgroundImage = "url('/assets/batu.png')";
+  rock.style.backgroundSize = "cover";
+  rock.style.backgroundRepeat = "no-repeat";
+
+  const isPowerUp = (currentLevel >= 2) && (Math.random() < POWERUP_CHANCE);
 
   if (isPowerUp) {
     const types = ["heart", "time", "shield"];
@@ -478,9 +471,6 @@ function createRock() {
     rock.classList.add("power-up", type);
     rock.dataset.type = "powerup";
     rock.dataset.power = type;
-  } else if (isQuestionRock) {
-    rock.classList.add("question-rock");
-    rock.dataset.type = "question";
   } else {
     rock.dataset.type = "normal";
   }
@@ -491,24 +481,18 @@ function createRock() {
 
   let rockPosition = 1000;
   const moveRock = setInterval(() => {
-    // pause gerak saat soal tampil
     if (!gameActive || (questionBox && !questionBox.classList.contains("hidden"))) return;
-
     rockPosition -= leafSpeed;
     rock.style.left = rockPosition + "px";
 
-    // Deteksi tabrakan (pakai hitbox yang di-inset + toleransi vertikal)
     const f = insetRect(frog.getBoundingClientRect(), 6);
     const r = insetRect(rock.getBoundingClientRect(), 4);
-
     const overlapped = !(f.right < r.left || f.left > r.right || f.bottom < r.top || f.top > r.bottom);
-    const frogIsAboveRock = f.bottom <= r.top + 6; // kalau sudah jelas di atas, jangan hitung tabrakan
+    const frogIsAboveRock = f.bottom <= r.top + 6;
 
     if (overlapped && !frogIsAboveRock) {
       if (rock.dataset.type === "powerup") {
         activatePowerUp(rock.dataset.power);
-      } else if (rock.dataset.type === "question") {
-        showQuestion();
       } else {
         if (frog.classList.contains("shielded")) {
           frog.classList.remove("shielded");
@@ -523,7 +507,6 @@ function createRock() {
       return;
     }
 
-    // Skor +5 saat lewati batu normal
     if (rock.dataset.type === "normal" && rockPosition < 30 && rock.dataset.scored === "false") {
       rock.dataset.scored = "true";
       score += 5;
@@ -575,15 +558,72 @@ function activatePowerUp(type) {
       gameContainer.appendChild(popup);
     }
   } else if (type === "time") {
-    startTime -= 10000; // +10 detik
+    startTime -= 10000;
     popup.textContent = "+10s ⏱️";
     gameContainer.appendChild(popup);
   } else if (type === "shield") {
-    frog.classList.add("shielded"); // tahan 1 tabrakan
+    frog.classList.add("shielded");
     popup.textContent = "🛡️ Shield Aktif!";
     gameContainer.appendChild(popup);
-    setTimeout(() => { frog.classList.remove("shielded"); }, 15000); // 15 detik
+    setTimeout(() => { frog.classList.remove("shielded"); }, 15000);
   }
+}
+
+// ================== TRIGGER KOTAK SOAL (Deteksi Tabrakan) ==================
+let spawnedQuestions = 0;
+
+function spawnQuestionTrigger() {
+  if (!gameActive) return;
+
+  const maxQuestions = QUESTIONS_PER_LEVEL[currentLevel] || 1;
+  if (spawnedQuestions >= maxQuestions) return;
+
+  const trigger = document.getElementById("question-trigger");
+  if (!trigger) return;
+
+  trigger.classList.remove("active");
+  trigger.style.left = "800px";
+
+  // Muncul acak
+  setTimeout(() => {
+    if (!gameActive || spawnedQuestions >= maxQuestions) return;
+
+    trigger.classList.add("active");
+    spawnedQuestions++;
+
+    let pos = 800;
+    const moveInterval = setInterval(() => {
+      if (!gameActive || !trigger.classList.contains("active") || questionBox.classList.contains("hidden") === false) {
+        clearInterval(moveInterval);
+        return;
+      }
+
+      pos -= 5;
+      trigger.style.left = pos + "px";
+
+      // ✅ DETEKSI TABRAKAN
+      const frogRect = frog.getBoundingClientRect();
+      const triggerRect = trigger.getBoundingClientRect();
+
+      const hit = !(frogRect.right < triggerRect.left ||
+                   frogRect.left > triggerRect.right ||
+                   frogRect.bottom < triggerRect.top ||
+                   frogRect.top > triggerRect.bottom);
+
+      if (hit && pos < 300) {
+        clearInterval(moveInterval);
+        trigger.classList.remove("active");
+        trigger.style.left = "800px";
+        showQuestion(); // Muncul soal
+        return;
+      }
+
+      if (pos < -60) {
+        clearInterval(moveInterval);
+        trigger.classList.remove("active");
+      }
+    }, 30);
+  }, Math.random() * 3000 + 5000);
 }
 
 // ================== Soal ==================
@@ -593,7 +633,7 @@ function showQuestion() {
   questionText.textContent = q.q;
   optionsDiv.innerHTML = "";
 
-  let timeLeft = 15;
+  let timeLeft = 10;
   if (questionTimeDisplay) questionTimeDisplay.textContent = timeLeft;
 
   clearInterval(questionTimer);
@@ -606,6 +646,8 @@ function showQuestion() {
       lives--;
       updateLives();
       hide(questionBox);
+      // Lanjutkan spawn kotak baru
+      setTimeout(spawnQuestionTrigger, 2000);
     }
   }, 1000);
 
@@ -614,7 +656,6 @@ function showQuestion() {
     btn.textContent = option;
     btn.addEventListener("click", () => {
       clearInterval(questionTimer);
-      questionsAnswered++;
       if (index === q.correct) {
         score += 10;
         levelProgress += 10;
@@ -631,6 +672,7 @@ function showQuestion() {
         if (wrongSound) { wrongSound.currentTime = 0; wrongSound.play().catch(()=>{}); }
       }
       hide(questionBox);
+      setTimeout(spawnQuestionTrigger, 2000);
     });
     optionsDiv.appendChild(btn);
   });
@@ -654,19 +696,17 @@ function initGame() {
   score = 0;
   lives = 5;
   questionsAnswered = 0;
-  leafSpeed = BASE_SPEED;
+  leafSpeed = 7 * (SPEED_MULTIPLIER[currentLevel] || 1);
 
   scoreDisplay.textContent = `Skor: ${score}/100`;
   updateLives();
   timerDisplay.textContent = "Waktu: 0s";
 
-  // bersihkan obstacle
   document.querySelectorAll(".rock").forEach(el => el.remove());
   frog.style.transform = "";
   frog.style.bottom = "80px";
   position = 80;
 
-  // pastikan skin tetap terpasang saat restart level
   setFrogSkin(localStorage.getItem('frog-skin') || 'frog-0');
 
   startTimer();
@@ -680,6 +720,9 @@ function initGame() {
       leafSpeed += 0.5;
     }
   }, 20000);
+
+  spawnedQuestions = 0;
+  spawnQuestionTrigger();
 
   levelProgress = 0;
   updateLevelDisplay();
@@ -698,17 +741,10 @@ if (restartBtn) {
   });
 }
 
-// ================== Skin Locks & Modal Skin ==================
+// ================== Skin Locks ==================
 const skinUnlockLevels = {
-  'frog-0': 0,
-  'frog-1': 1,
-  'frog-2': 2,
-  'frog-3': 2,
-  'frog-4': 2,
-  'frog-5': 3,
-  'frog-6': 3,
-  'frog-7': 4,
-  'frog-8': 5
+  'frog-0': 0, 'frog-1': 1, 'frog-2': 2, 'frog-3': 2, 'frog-4': 2,
+  'frog-5': 3, 'frog-6': 3, 'frog-7': 4, 'frog-8': 5
 };
 
 function handleClick() {
@@ -719,13 +755,10 @@ function handleClick() {
 function updateSkinLocks(currLv = 1) {
   document.querySelectorAll('.skin-option').forEach(option => {
     option.removeEventListener('click', handleClick);
-
     const classes = option.className.split(' ');
     const skinName = classes.find(cls => cls.startsWith('frog-'));
     if (!skinName) return;
-
     const unlockLevel = skinUnlockLevels[skinName];
-
     if (currLv < unlockLevel) {
       option.classList.add('skin-locked');
       option.setAttribute('data-unlock', `Lv. ${unlockLevel}`);
@@ -737,62 +770,37 @@ function updateSkinLocks(currLv = 1) {
   });
 }
 
+// ✅ Inisialisasi
 document.addEventListener('DOMContentLoaded', () => {
-  const savedLevel   = parseInt(localStorage.getItem('currentLevel')) || 1;
-  const chooseSkinBtn= document.getElementById('choose-skin-btn');
-  const skinModal    = document.getElementById('skin-modal');
-  const saveSkinBtn  = document.getElementById('save-skin-btn');
+  const savedLevel = parseInt(localStorage.getItem('currentLevel')) || 1;
+  const skinModal = document.getElementById('skin-modal');
+  const saveSkinBtn = document.getElementById('save-skin-btn');
   const closeSkinBtn = document.getElementById('close-skin-btn');
 
-  // Apply skin tersimpan
   const savedSkin = localStorage.getItem('frog-skin') || 'frog-0';
-  if (frog) {
-    setFrogSkin(savedSkin); // pakai util agar inline bg terpasang
-  }
+  if (frog) setFrogSkin(savedSkin);
 
-  // Kunci skin sesuai level tersimpan
   updateSkinLocks(savedLevel);
   hydrateSkinThumbnails();
   markSelectedSkinTile(savedSkin);
 
-  // Modal Skin
-  chooseSkinBtn?.addEventListener('click', () => {
-    hydrateSkinThumbnails();
-    updateSkinLocks(currentLevel);
-    markSelectedSkinTile(localStorage.getItem('frog-skin') || 'frog-0');
-    skinModal?.classList.remove('hidden');
+  closeSkinBtn?.addEventListener('click', () => {
+    skinModal?.classList.add('hidden');
   });
-  closeSkinBtn?.addEventListener('click', () => skinModal?.classList.add('hidden'));
+
   window.addEventListener('click', (e) => {
     if (e.target === skinModal) skinModal?.classList.add('hidden');
   });
 
-  // Simpan skin
   saveSkinBtn?.addEventListener('click', () => {
     const selected = document.querySelector('.skin-option.selected');
     if (!selected) return;
-
     const classes = selected.className.split(' ');
     const skinName = classes.find(cls => cls.startsWith('frog-'));
     if (!skinName) return;
-
     setFrogSkin(skinName);
     skinModal?.classList.add('hidden');
   });
 
-  // ✅ Fallback pemasangan listener Start jika script dimuat sebelum tombol ada
-  if (!startBtn) {
-    const sb = document.getElementById('start-btn');
-    sb?.addEventListener('click', openNameModal);
-  }
-
-  // Pastikan tombol pilih skin muncul di Name Modal juga
   ensureInlinePickSkinButton();
-});
-
-// ✅ Delegasi klik global sebagai lapisan terakhir (jaga-jaga)
-document.addEventListener('click', (e) => {
-  if (e.target && e.target.id === 'start-btn') {
-    openNameModal();
-  }
 });
