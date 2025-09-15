@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-
+<audio id="bgm" src="assets/backsound.mp3" preload="auto" loop></audio>
   <!-- Main Menu -->
   <div id="main-menu" class="menu">
     <div class="logo-container">
@@ -24,7 +24,7 @@
 
   <!-- Modal Nama + Pilih Skin -->
   <div id="name-modal" class="hidden modal">
-    <h2>🎮 Selamat Datang di Frogy Jump</h2>
+    <h2>Selamat Datang di Frogy Jump</h2>
     <p>Masukkan nama Anda untuk memulai permainan:</p>
     <input type="text" id="player-name-input" placeholder="Nama Anda" maxlength="15" />
     <button id="start-game-btn">Mulai Game</button>
@@ -51,7 +51,7 @@
     <!-- Kotak Soal (Trigger) -->
     <!-- Di dalam #game-container -->
 <div id="question-trigger">
-  <img src="/assets/kotak-soal.png" alt="Kotak Soal" width="60">
+  <img src="/assets/kotak-soal.png" alt="Kotak Soal" width="30">
 </div>
 
     <!-- Kotak Soal -->
@@ -158,7 +158,7 @@
   <!-- Modal Pilih Skin -->
   <div id="skin-modal" class="hidden skin-modal-backdrop">
     <div class="skin-modal">
-      <h3>🎨 Pilih Skin Katak</h3>
+      <h3>Pilih Skin Katak</h3>
       <div id="skin-selector" class="skin-grid">
         <div class="skin-option frog-0" data-unlock="Lv. 0"></div>
         <div class="skin-option frog-1" data-unlock="Lv. 1"></div>
@@ -183,6 +183,7 @@
     <p id="completion-time">Waktu: 0 detik</p>
     <p>Anda telah menyelesaikan permainan!</p>
     <button id="restart-game-btn">Main Lagi</button>
+    <button id="completion-back-btn" class="btn-secondary">⬅ Kembali ke Menu</button>
   </div>
 
   <!-- Leaderboard -->

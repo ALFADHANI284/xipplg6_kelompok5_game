@@ -3,6 +3,7 @@
    ========================================= */
 
 // === Elemen DOM ===
+const bgm = document.getElementById('bgm');
 const mainMenu            = document.getElementById("main-menu");
 const nameModal           = document.getElementById("name-modal");
 const playerNameInput     = document.getElementById("player-name-input");
@@ -35,7 +36,8 @@ const settingsModal       = document.getElementById("settings-modal");
 const saveSettingsBtn     = document.getElementById("save-settings-btn");
 const closeSettingsBtn    = document.getElementById("close-settings-btn");
 const newUsernameInput    = document.getElementById("new-username");
-
+const MAX_SPEED = 15;   
+const POWERUP_CHANCE = 0.20;
 // Tombol “Kembali” pada modal nama
 const backNameBtn = document.getElementById("Kembali") || document.getElementById("back-to-main-btn");
 
@@ -80,20 +82,14 @@ function markSelectedSkinTile(key) {
 function ensureInlinePickSkinButton() {
   if (!nameModal) return;
   if (document.getElementById('pick-skin-inline')) return;
+
   const btn = document.createElement('button');
   btn.id = 'pick-skin-inline';
   btn.type = 'button';
   btn.textContent = '🎨 Pilih Skin';
-  btn.style.marginTop = '10px';
-  btn.style.padding = '12px 25px';
-  btn.style.borderRadius = '8px';
-  btn.style.border = 'none';
-  btn.style.cursor = 'pointer';
-  btn.style.fontWeight = 'bold';
-  btn.style.background = '#2B3942';
-  btn.style.color = '#fff';
+  btn.classList.add('btn-skin-inline'); // ✅ styling lewat CSS
 
-  const backBtnInModal = document.getElementById('back-to-main-btn') || document.getElementById('Kembali');
+  const backBtnInModal = document.getElementById('back-to-main-btn');
   if (backBtnInModal && backBtnInModal.parentNode === nameModal) {
     nameModal.insertBefore(btn, backBtnInModal);
   } else {
@@ -215,6 +211,11 @@ function completeLevel() {
   clearInterval(gameTimer);
   clearInterval(speedIncreaseTimer);
 
+  const totalTime = Math.floor((Date.now() - startTime) / 1000);
+
+  // ✅ Simpan ke leaderboard
+  saveToLeaderboard(currentPlayerName, totalTime);
+
   currentLevel++;
 
   const progressData = {
@@ -231,10 +232,11 @@ function completeLevel() {
   updateSkinLocks(currentLevel);
 
   completionTime.innerHTML = `
-    🎉 <strong>Level ${currentLevel - 1} Selesai!</strong><br>
+     <strong>Level ${currentLevel - 1} Selesai!</strong><br>
     Skor: ${score}<br>
-    Waktu: ${Math.floor((Date.now() - startTime) / 1000)} detik<br>
-    <img src="/assets/badges/badge${currentLevel - 1}.png" alt="Badge Level ${currentLevel - 1}" class="badge-img">
+    Waktu: ${totalTime} detik<br>
+    <img src="/assets/badges/badge${currentLevel - 1}.png" 
+         alt="Badge Level ${currentLevel - 1}" class="badge-img">
   `;
   show(completionModal);
   restartGameBtn.textContent = "➡️ Lanjut ke Level Berikutnya";
@@ -258,6 +260,25 @@ function completeLevel() {
     initGame();
   };
 }
+
+// ✅ tombol kembali ke menu saat selesai level
+const completionBackBtn = document.getElementById('completion-back-btn');
+if (completionBackBtn) {
+  completionBackBtn.addEventListener('click', () => {
+    // matikan game sepenuhnya
+    gameActive = false;
+    clearInterval(rockInterval);
+    clearInterval(gameTimer);
+    clearInterval(questionTimer);
+    clearInterval(speedIncreaseTimer);
+
+    // bereskan UI
+    hide(completionModal);
+    hide(gameContainer);
+    show(mainMenu);
+  });
+}
+
 
 // ================== Event Listeners ==================
 if (startBtn) startBtn.addEventListener("click", openNameModal);
@@ -378,22 +399,23 @@ function showLeaderboard() {
   let leaderboard = [];
   try { leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || []; } catch {}
   leaderboardList.innerHTML = "";
+
   if (leaderboard.length === 0) {
     leaderboardList.innerHTML = '<li class="empty">Belum ada pemain</li>';
     return;
   }
+
   leaderboard.forEach((entry, index) => {
     let playerData = {};
     try { playerData = JSON.parse(localStorage.getItem(`progress_${entry.name}`)) || {}; } catch {}
     const levelAchieved = playerData.currentLevel || 1;
+
     const li = document.createElement("li");
     li.innerHTML = `
       <span class="rank">#${index + 1}</span>
-      <div class="player-info">
-        <span class="name">${entry.name}</span>
-        <span class="time">${entry.time}s</span>
-        <span class="level-badge">🏆 Lv. ${levelAchieved}</span>
-      </div>
+      <span class="name">${entry.name}</span>
+      <span class="time">${entry.time}s</span>
+      <span class="level-badge">🏆 Lv. ${levelAchieved}</span>
     `;
     leaderboardList.appendChild(li);
   });
@@ -685,10 +707,18 @@ function gameOver() {
   clearInterval(gameTimer);
   clearInterval(questionTimer);
   clearInterval(speedIncreaseTimer);
+
+  const totalTime = Math.floor((Date.now() - startTime) / 1000);
+
   finalScore.textContent = score;
-  finalTime.textContent = Math.floor((Date.now() - startTime) / 1000);
+  finalTime.textContent = totalTime;
+
+  // ✅ Simpan hasil ke leaderboard
+  saveToLeaderboard(currentPlayerName, totalTime);
+
   show(gameOverScreen);
 }
+
 
 // ================== Init / Restart ==================
 function initGame() {
@@ -696,6 +726,10 @@ function initGame() {
   score = 0;
   lives = 5;
   questionsAnswered = 0;
+
+  // ✅ pastikan timer soal dari level sebelumnya dimatikan
+  clearInterval(questionTimer);
+
   leafSpeed = 7 * (SPEED_MULTIPLIER[currentLevel] || 1);
 
   scoreDisplay.textContent = `Skor: ${score}/100`;
@@ -722,24 +756,12 @@ function initGame() {
   }, 20000);
 
   spawnedQuestions = 0;
-  spawnQuestionTrigger();
+  spawnQuestionTrigger();   // soal akan spawn otomatis (delay acak 5–8 detik)
 
   levelProgress = 0;
   updateLevelDisplay();
 }
 
-if (restartGameBtn) {
-  restartGameBtn.addEventListener("click", () => {
-    hide(completionModal);
-    initGame();
-  });
-}
-if (restartBtn) {
-  restartBtn.addEventListener("click", () => {
-    hide(gameOverScreen);
-    initGame();
-  });
-}
 
 // ================== Skin Locks ==================
 const skinUnlockLevels = {
@@ -804,3 +826,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
   ensureInlinePickSkinButton();
 });
+
+// ====== Pause/Resume state & utils (TAMBAHKAN) ======
+let isPaused = false;
+let pauseStartedAt = 0;
+
+function pauseGame() {
+  if (!gameActive || isPaused) return;
+  isPaused = true;
+  pauseStartedAt = Date.now();
+  clearInterval(gameTimer); // freeze HUD timer (startTime disesuaikan saat resume)
+}
+
+function resumeGame() {
+  if (!isPaused) return;
+  isPaused = false;
+  if (pauseStartedAt) {
+    // kompensasi durasi jeda agar timer HUD tetap akurat
+    startTime += Date.now() - pauseStartedAt;
+    pauseStartedAt = 0;
+  }
+  // lanjutkan HUD timer jika tidak di game over / completion
+  if (gameOverScreen.classList.contains("hidden") &&
+      completionModal.classList.contains("hidden")) {
+    startTimer(true); // resume: JANGAN reset startTime
+  }
+}
+//audio
+function syncAudioSettings() {
+  const master = document.getElementById('volume-master');
+  const mute   = document.getElementById('mute-switch');
+  const vol = Math.max(0, Math.min(1, (parseInt(master?.value || '60', 10))/100));
+  const muted = !!mute?.checked;
+  [bgm, jumpSound, correctSound, wrongSound, scoreSound]
+    .filter(Boolean)
+    .forEach(a => { a.volume = muted ? 0 : vol; a.muted = muted; });
+}
+document.getElementById('volume-master')?.addEventListener('input', syncAudioSettings);
+document.getElementById('mute-switch')?.addEventListener('change', syncAudioSettings);
