@@ -223,8 +223,8 @@ body {
 /* Tambahan kecil agar Level terlihat */
 #level {
   position: absolute;
-  top: 20px;
-  left: 10%;
+  top: 5%;
+  left: 2.5%;
   transform: translateX(-50%);
   color: #fff;
   font-weight: bold;
@@ -766,7 +766,7 @@ body.reduced-motion *{
   transition: none !important;
 }
 
-/* ===================== SKIN MODAL (baru/ditambahkan) ===================== */
+/* ===================== SKIN MODAL ===================== */
 
 #skin-modal {
   position: fixed;
@@ -774,7 +774,6 @@ body.reduced-motion *{
   display: none;              /* dikontrol oleh .hidden */
   align-items: center;
   justify-content: center;
-  background-color: white;
   z-index: 300;               /* di atas name-modal */
 }
 

@@ -46,6 +46,10 @@ const correctSound= document.getElementById("correct-sound");
 const wrongSound  = document.getElementById("wrong-sound");
 const scoreSound  = document.getElementById("score-sound");
 
+// KUMPULKAN SFX & FLAG BGM (untuk pause/resume audio)
+const SFX_AUDIOS = [jumpSound, correctSound, wrongSound, scoreSound].filter(Boolean);
+let wasBgmPlayingBeforePause = false;
+
 // 🟩 TRIGGER KOTAK SOAL
 const questionTrigger = document.getElementById("question-trigger");
 
@@ -193,7 +197,7 @@ document.addEventListener("keydown", (e) => {
 // ================== Level & Progress ==================
 function updateLevelDisplay() {
   const el = document.getElementById("level");
-  if (el) el.textContent = `Lv: ${currentLevel} | ${levelProgress}/${levelTarget}`;
+  if (el) el.textContent = `Lv: ${currentLevel}`;
 }
 
 function completeLevel() {
@@ -818,7 +822,7 @@ function initGame() {
   updateLevelDisplay();
 
   // mulai BGM kalau ada
-  bgm?.play?.().catch(()=>{});
+  try { bgm?.play?.().catch(()=>{}); } catch {}
 }
 
 // ================== Skin Locks ==================
@@ -896,21 +900,38 @@ function pauseGame() {
   if (!gameActive || isPaused) return;
   isPaused = true;
   pauseStartedAt = Date.now();
-  clearInterval(gameTimer); // stop HUD
+
+  // ===== PAUSE HUD TIMER
+  clearInterval(gameTimer);
+
+  // ===== PAUSE AUDIO
+  if (bgm) {
+    wasBgmPlayingBeforePause = !bgm.paused;
+    try { bgm.pause(); } catch {}
+  }
+  // Hentikan SFX yang sedang bunyi (tidak perlu di-resume)
+  SFX_AUDIOS.forEach(a => { try { if (!a.paused) a.pause(); } catch {} });
 }
 
 function resumeGame() {
   if (!isPaused) return;
   isPaused = false;
+
+  // Kompensasi waktu jeda supaya HUD tetap akurat
   if (pauseStartedAt) {
-    // kompensasi durasi jeda
     startTime += Date.now() - pauseStartedAt;
     pauseStartedAt = 0;
   }
-  // lanjutkan HUD timer jika bukan game over / completion
+
+  // ===== RESUME HUD TIMER (kalau bukan akhir game)
   if (gameOverScreen.classList.contains("hidden") &&
       completionModal.classList.contains("hidden")) {
-    startTimer(true); // resume tanpa reset
+    startTimer(true); // lanjut tanpa reset startTime
+  }
+
+  // ===== RESUME BGM jika sebelumnya memang sedang main & tidak dimute
+  if (bgm && wasBgmPlayingBeforePause && !bgm.muted) {
+    try { bgm.play().catch(()=>{}); } catch {}
   }
 }
 
@@ -926,3 +947,17 @@ function syncAudioSettings() {
 }
 document.getElementById('volume-master')?.addEventListener('input', syncAudioSettings);
 document.getElementById('mute-switch')?.addEventListener('change', syncAudioSettings);
+
+// ====== Hotkey Pause (P) ======
+function togglePause() {
+  if (!gameActive) return;
+  if (isPaused) { resumeGame(); }
+  else { pauseGame(); }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'KeyP' && gameActive && !anyModalOpen()) {
+    e.preventDefault();
+    togglePause();
+  }
+});
