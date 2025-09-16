@@ -620,8 +620,10 @@ body.dark-mode .score-popup { color: #81c784 !important; }
   transform: translate(-50%, -50%);
   width: min(50%, 620px);
   max-width: 92vw;
-  max-height: 85vh;
-  overflow: auto;
+  /* tidak pakai max-height supaya tidak scroll */
+  max-height: none;
+  /* jangan scroll di dalam modal */
+  overflow: hidden;
   padding: 24px;
   border-radius: 16px;
   background: linear-gradient(to bottom right, rgba(255,255,255,.94), rgba(255,255,255,.88));

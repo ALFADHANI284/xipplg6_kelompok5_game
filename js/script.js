@@ -1,7 +1,3 @@
-/* =========================================
-   Frogy Jump — Final Version (Soal Muncul Saat Tabrak Kotak Soal)
-   ========================================= */
-
 // === Elemen DOM ===
 const bgm = document.getElementById('bgm');
 const mainMenu            = document.getElementById("main-menu");
@@ -36,7 +32,10 @@ const settingsModal       = document.getElementById("settings-modal");
 const saveSettingsBtn     = document.getElementById("save-settings-btn");
 const closeSettingsBtn    = document.getElementById("close-settings-btn");
 const newUsernameInput    = document.getElementById("new-username");
-const MAX_SPEED = 15;   
+const resetProgressBtn    = document.getElementById("reset-progress-btn");
+const resetLeaderboardBtn = document.getElementById("reset-leaderboard-btn");
+
+const MAX_SPEED = 15;
 const POWERUP_CHANCE = 0.20;
 // Tombol “Kembali” pada modal nama
 const backNameBtn = document.getElementById("Kembali") || document.getElementById("back-to-main-btn");
@@ -145,20 +144,12 @@ let questionsAnswered = 0;
 
 // Jumlah kotak soal per level
 const QUESTIONS_PER_LEVEL = {
-  1: 5,
-  2: 4,
-  3: 3,
-  4: 2,
-  5: 1
+  1: 5, 2: 4, 3: 3, 4: 2, 5: 1
 };
 
 // Kecepatan multiplier per level
 const SPEED_MULTIPLIER = {
-  1: 1,
-  2: 2,
-  3: 3,
-  4: 3.5,
-  5: 4
+  1: 1, 2: 2, 3: 3, 4: 3.5, 5: 4
 };
 
 // 📚 Soal
@@ -279,7 +270,6 @@ if (completionBackBtn) {
   });
 }
 
-
 // ================== Event Listeners ==================
 if (startBtn) startBtn.addEventListener("click", openNameModal);
 if (backNameBtn) backNameBtn.addEventListener("click", closeNameModal);
@@ -331,17 +321,27 @@ if (startGameBtn) {
   });
 }
 
-// ================== Settings ==================
+/* ============ Settings (pause + no scroll body saat open) ============ */
+function lockBodyScroll(lock) {
+  const val = lock ? 'hidden' : '';
+  document.documentElement.style.overflow = val;
+  document.body.style.overflow = val;
+}
+
 if (settingsBtn) {
   settingsBtn.addEventListener("click", () => {
-    gameActive = false;
-    clearInterval(rockInterval);
-    clearInterval(gameTimer);
-    clearInterval(speedIncreaseTimer);
+    pauseGame();
+    lockBodyScroll(true);     // 🚫 stop scroll halaman saat settings terbuka
     show(settingsModal);
   });
 }
-if (closeSettingsBtn) closeSettingsBtn.addEventListener("click", () => hide(settingsModal));
+if (closeSettingsBtn) {
+  closeSettingsBtn.addEventListener("click", () => {
+    hide(settingsModal);
+    lockBodyScroll(false);
+    resumeGame();             // ✅ lanjutkan game normal
+  });
+}
 
 if (saveSettingsBtn) {
   saveSettingsBtn.addEventListener("click", () => {
@@ -352,27 +352,48 @@ if (saveSettingsBtn) {
       alert("Nama berhasil diganti menjadi: " + newName);
       newUsernameInput.value = "";
     }
-
-    // ✅ RESUME GAME
-    if (!gameOverScreen.classList.contains("hidden") || 
-        !completionModal.classList.contains("hidden")) return;
-
-    gameActive = true;
-    startTimer();
-    rockInterval = setInterval(createRock, 3000);
-    speedIncreaseTimer = setInterval(() => {
-      if (gameActive && leafSpeed < MAX_SPEED) {
-        leafSpeed += 0.5;
-      }
-    }, 20000);
-
     hide(settingsModal);
+    lockBodyScroll(false);
+    resumeGame();             // ✅ lanjut jalan, tidak reset apa-apa
+  });
+}
+
+// ✅ Reset Progress (pemain aktif)
+if (resetProgressBtn) {
+  resetProgressBtn.addEventListener('click', () => {
+    if (!confirm('Yakin reset progress? Ini akan mengembalikan Level ke 1 dan menghapus progress pemain saat ini.')) return;
+
+    try {
+      if (currentPlayerName) localStorage.removeItem(`progress_${currentPlayerName}`);
+      localStorage.removeItem('currentLevel');
+    } catch {}
+
+    // reset state runtime
+    currentLevel = 1;
+    levelTarget = 100;
+    levelProgress = 0;
+    updateSkinLocks(currentLevel);
+    updateLevelDisplay();
+
+    alert('Progress sudah direset. Mulai dari Level 1.');
+  });
+}
+
+// ✅ Bersihkan Leaderboard (semua pemain)
+if (resetLeaderboardBtn) {
+  resetLeaderboardBtn.addEventListener('click', () => {
+    if (!confirm('Yakin bersihkan leaderboard untuk semua pemain?')) return;
+    try { localStorage.removeItem('leaderboard'); } catch {}
+    if (leaderboardList) {
+      leaderboardList.innerHTML = '<li class="empty">Belum ada pemain</li>';
+    }
+    alert('Leaderboard berhasil dibersihkan.');
   });
 }
 
 // ================== Timer ==================
-function startTimer() {
-  startTime = Date.now();
+function startTimer(keepOffset = false) {
+  if (!keepOffset) startTime = Date.now();
   clearInterval(gameTimer);
   gameTimer = setInterval(() => {
     const elapsed = Math.floor((Date.now() - startTime) / 1000);
@@ -432,7 +453,7 @@ function insetRect(rect, inset = 6) {
 }
 
 function jump() {
-  if (isJumping || !gameActive) return;
+  if (isJumping || !gameActive || isPaused) return; // ⬅️ hormati pause
   isJumping = true;
   if (jumpSound) { jumpSound.currentTime = 0; jumpSound.play().catch(()=>{}); }
   frog.style.transform = "rotate(12deg)";
@@ -441,6 +462,11 @@ function jump() {
   position = Math.max(position, 80);
 
   const jumpInterval = setInterval(() => {
+    if (!gameActive || isPaused) { // ⬅️ stop animasi saat pause/gameoff
+      clearInterval(jumpInterval);
+      isJumping = false;
+      return;
+    }
     position += vUp;
     vUp -= g;
     if (position < 80) position = 80;
@@ -461,13 +487,13 @@ function anyModalOpen() {
   return modals.some(m => m && !m.classList.contains("hidden"));
 }
 document.addEventListener("keydown", (e) => {
-  if (e.code === "Space" && gameActive && !anyModalOpen()) {
+  if (e.code === "Space" && gameActive && !isPaused && !anyModalOpen()) {
     e.preventDefault();
     jump();
   }
 });
 document.addEventListener("click", (e) => {
-  if (gameActive && !anyModalOpen() && e.target !== playerNameInput) {
+  if (gameActive && !isPaused && !anyModalOpen() && e.target !== playerNameInput) {
     const isButton = e.target.closest("button");
     const inUI = e.target.closest("#question-box, #settings-modal, #leaderboard, #name-modal");
     if (!isButton && !inUI) jump();
@@ -503,7 +529,12 @@ function createRock() {
 
   let rockPosition = 1000;
   const moveRock = setInterval(() => {
-    if (!gameActive || (questionBox && !questionBox.classList.contains("hidden"))) return;
+    // ⬇️ freeze saat pause ATAU ada modal
+    if (!gameActive) { clearInterval(moveRock); if (rock.parentNode) gameContainer.removeChild(rock); return; }
+    if (isPaused || anyModalOpen()) return;
+
+    if (questionBox && !questionBox.classList.contains("hidden")) return;
+
     rockPosition -= leafSpeed;
     rock.style.left = rockPosition + "px";
 
@@ -615,7 +646,9 @@ function spawnQuestionTrigger() {
 
     let pos = 800;
     const moveInterval = setInterval(() => {
-      if (!gameActive || !trigger.classList.contains("active") || questionBox.classList.contains("hidden") === false) {
+      if (!gameActive) { clearInterval(moveInterval); return; }
+      if (isPaused || anyModalOpen()) return; // ⬅️ freeze saat pause/modal
+      if (!trigger.classList.contains("active") || questionBox.classList.contains("hidden") === false) {
         clearInterval(moveInterval);
         return;
       }
@@ -628,9 +661,9 @@ function spawnQuestionTrigger() {
       const triggerRect = trigger.getBoundingClientRect();
 
       const hit = !(frogRect.right < triggerRect.left ||
-                   frogRect.left > triggerRect.right ||
-                   frogRect.bottom < triggerRect.top ||
-                   frogRect.top > triggerRect.bottom);
+                    frogRect.left > triggerRect.right ||
+                    frogRect.bottom < triggerRect.top ||
+                    frogRect.top > triggerRect.bottom);
 
       if (hit && pos < 300) {
         clearInterval(moveInterval);
@@ -660,6 +693,7 @@ function showQuestion() {
 
   clearInterval(questionTimer);
   questionTimer = setInterval(() => {
+    if (isPaused) return; // ⬅️ jangan hitung mundur saat pause
     timeLeft--;
     if (questionTimeDisplay) questionTimeDisplay.textContent = timeLeft;
     if (timeLeft <= 0) {
@@ -668,7 +702,6 @@ function showQuestion() {
       lives--;
       updateLives();
       hide(questionBox);
-      // Lanjutkan spawn kotak baru
       setTimeout(spawnQuestionTrigger, 2000);
     }
   }, 1000);
@@ -703,6 +736,7 @@ function showQuestion() {
 // ================== Game Over ==================
 function gameOver() {
   gameActive = false;
+  isPaused = false; // pastikan tidak dalam mode pause
   clearInterval(rockInterval);
   clearInterval(gameTimer);
   clearInterval(questionTimer);
@@ -719,10 +753,32 @@ function gameOver() {
   show(gameOverScreen);
 }
 
+// ✅ Restart dari GAME OVER
+if (restartBtn) {
+  restartBtn.addEventListener('click', () => {
+    // tutup modal
+    hide(gameOverScreen);
+    // pastikan area game kelihatan
+    show(gameContainer);
+
+    // matikan interval tersisa (jaga-jaga)
+    clearInterval(rockInterval);
+    clearInterval(gameTimer);
+    clearInterval(questionTimer);
+    clearInterval(speedIncreaseTimer);
+
+    // reset pause flag
+    isPaused = false;
+
+    // mulai ulang level yang sama
+    initGame();
+  });
+}
 
 // ================== Init / Restart ==================
 function initGame() {
   gameActive = true;
+  isPaused = false;
   score = 0;
   lives = 5;
   questionsAnswered = 0;
@@ -743,14 +799,14 @@ function initGame() {
 
   setFrogSkin(localStorage.getItem('frog-skin') || 'frog-0');
 
-  startTimer();
+  startTimer(); // fresh start
 
   clearInterval(rockInterval);
   rockInterval = setInterval(createRock, 3000);
 
   clearInterval(speedIncreaseTimer);
   speedIncreaseTimer = setInterval(() => {
-    if (gameActive && leafSpeed < MAX_SPEED) {
+    if (gameActive && !isPaused && leafSpeed < MAX_SPEED) {
       leafSpeed += 0.5;
     }
   }, 20000);
@@ -760,8 +816,10 @@ function initGame() {
 
   levelProgress = 0;
   updateLevelDisplay();
-}
 
+  // mulai BGM kalau ada
+  bgm?.play?.().catch(()=>{});
+}
 
 // ================== Skin Locks ==================
 const skinUnlockLevels = {
@@ -792,7 +850,7 @@ function updateSkinLocks(currLv = 1) {
   });
 }
 
-// ✅ Inisialisasi
+// ✅ Inisialisasi awal
 document.addEventListener('DOMContentLoaded', () => {
   const savedLevel = parseInt(localStorage.getItem('currentLevel')) || 1;
   const skinModal = document.getElementById('skin-modal');
@@ -825,9 +883,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   ensureInlinePickSkinButton();
+
+  // sinkron volume awal
+  syncAudioSettings();
 });
 
-// ====== Pause/Resume state & utils (TAMBAHKAN) ======
+// ====== Pause/Resume state & utils ======
 let isPaused = false;
 let pauseStartedAt = 0;
 
@@ -835,24 +896,25 @@ function pauseGame() {
   if (!gameActive || isPaused) return;
   isPaused = true;
   pauseStartedAt = Date.now();
-  clearInterval(gameTimer); // freeze HUD timer (startTime disesuaikan saat resume)
+  clearInterval(gameTimer); // stop HUD
 }
 
 function resumeGame() {
   if (!isPaused) return;
   isPaused = false;
   if (pauseStartedAt) {
-    // kompensasi durasi jeda agar timer HUD tetap akurat
+    // kompensasi durasi jeda
     startTime += Date.now() - pauseStartedAt;
     pauseStartedAt = 0;
   }
-  // lanjutkan HUD timer jika tidak di game over / completion
+  // lanjutkan HUD timer jika bukan game over / completion
   if (gameOverScreen.classList.contains("hidden") &&
       completionModal.classList.contains("hidden")) {
-    startTimer(true); // resume: JANGAN reset startTime
+    startTimer(true); // resume tanpa reset
   }
 }
-//audio
+
+// ====== Audio settings ======
 function syncAudioSettings() {
   const master = document.getElementById('volume-master');
   const mute   = document.getElementById('mute-switch');
